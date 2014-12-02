@@ -8,7 +8,7 @@ describe RuboCop::Cop::Yast::Builtins do
   it "reports Builtins.* call" do
     inspect_source(cop, ['Builtins.y2milestone("foo")'])
 
-    expect(cop.offenses).to have(1).item
+    expect(cop.offenses.size).to eq(1)
     expect(cop.offenses.first.line).to eq(1)
     expect(cop.messages).to eq(["Builtin call `y2milestone` is obsolete, " \
       "use native Ruby function instead."])

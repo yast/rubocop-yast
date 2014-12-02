@@ -6,8 +6,8 @@ require "rubocop/yast/version"
 Gem::Specification.new do |spec|
   spec.name = "rubocop-yast"
   spec.summary = "Specific YaST Rubocop checks"
-  spec.description = "A plugin for the RuboCop code style checker\n" \
-    "This Rubocop plugin checks for YaST specific issues."
+  spec.description = "This is a plugin for the RuboCop code style checker.\n" \
+    "It checks for YaST specific issues."
   spec.homepage = "http://github.com/yast/rubocop-yast"
   spec.authors = ["Ladislav Slezák"]
   spec.email = ["lslezak@suse.cz"]
@@ -30,6 +30,6 @@ Gem::Specification.new do |spec|
 
   spec.add_development_dependency("rubocop", "~> 0.27")
   spec.add_development_dependency("rake")
-  spec.add_development_dependency("rspec", "~> 2.14.1")
+  spec.add_development_dependency("rspec", "~> 3.1.0")
   spec.add_development_dependency("simplecov")
 end
