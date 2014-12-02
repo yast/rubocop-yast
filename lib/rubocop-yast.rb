@@ -4,3 +4,4 @@ require "rubocop"
 
 require_relative "rubocop/yast/version"
 require_relative "rubocop/cop/yast/builtins"
+require_relative "rubocop/cop/yast/ops"

@@ -3,6 +3,9 @@ Style/FileName:
   Exclude:
     - lib/rubocop-yast.rb
 
+Metrics/ClassLength:
+  Max: 150
+
 # align arrows:
 # "foo"     => true
 # "foo_bar" => false
