@@ -12,12 +12,20 @@ module RuboCop
         # white list of allowed Builtins calls
         ALLOWED_FUNCTIONS = [
           # locale dependent sorting in not available in Ruby stdlib
-          :lsort
+          :lsort,
+          # gettext helpers
+          :dgettext,
+          :dngettext,
+          :dpgettext
         ]
 
         BUILTINS_NODES = [
+          # Builtins.*
           s(:const, nil, :Builtins),
-          s(:const, s(:cbase), :Builtins)
+          # Yast::Builtins.*
+          s(:const, s(:const, nil, :Yast), :Builtins),
+          # ::Yast::Builtins.*
+          s(:const, s(:const, s(:cbase), :Yast), :Builtins)
         ]
 
         def on_send(node)
