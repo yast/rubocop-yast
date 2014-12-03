@@ -101,19 +101,13 @@ module RuboCop
         end
 
         def on_and_asgn(node)
-          var, value = * node
-          return if var.type != :lvasgn
-          name = var.children[0]
-
-          scope[name].nice &&= nice(value)
+          var, value = *node
+          bool_op_asgn(var, value, :and)
         end
 
         def on_or_asgn(node)
-          var, value = * node
-          return if var.type != :lvasgn
-          name = var.children[0]
-
-          scope[name].nice ||= nice(value)
+          var, value = *node
+          bool_op_asgn(var, value, :or)
         end
 
         def on_send(node)
@@ -217,6 +211,20 @@ module RuboCop
         def ops_replacement(new_ops, arg1, arg2)
           "#{arg1.loc.expression.source} #{new_ops} " \
             "#{arg2.loc.expression.source}"
+        end
+
+        def bool_op_asgn(var, value, op)
+          return if var.type != :lvasgn
+          name = var.children[0]
+
+          case op
+          when :and
+            scope[name].nice &&= nice(value)
+          when :or
+            scope[name].nice ||= nice(value)
+          else
+            raise "Unknown operator: #{op}"
+          end
         end
 
         attr_reader :scopes, :safe_mode
