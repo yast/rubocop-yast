@@ -61,4 +61,25 @@ describe RuboCop::Cop::Yast::Ops do
     expect(cop.offenses).to be_empty
   end
 
+  it "auto-corrects Ops.add(2, 4) with 2 + 4" do
+    new_source = autocorrect_source(cop, "Ops.add(2, 4)")
+    expect(new_source).to eq("2 + 4")
+  end
+
+  it "auto-corrects Ops.add(foo, bar) with foo + bar" do
+    new_source = autocorrect_source(cop, "foo = 1; bar = 2; Ops.add(foo, bar)")
+    expect(new_source).to eq("foo = 1; bar = 2; foo + bar")
+  end
+
+  it 'auto-corrects Ops.add("foo", "bar") with "foo" + "bar"' do
+    new_source = autocorrect_source(cop, 'Ops.add("foo", "bar")')
+    expect(new_source).to eq('"foo" + "bar"')
+  end
+
+  it "keeps unsafe call Ops.add(foo, bar)" do
+    source = "foo = 1; Ops.add(foo, bar)"
+    new_source = autocorrect_source(cop, source)
+    expect(new_source).to eq(source)
+  end
+
 end

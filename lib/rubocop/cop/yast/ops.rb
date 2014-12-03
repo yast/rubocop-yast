@@ -15,6 +15,11 @@ module RuboCop
       class Ops < Cop
         include Niceness
 
+        # Ops replacement mapping
+        REPLACEMENT = {
+          add: "+"
+        }
+
         MSG = "Ops call found"
 
         def initialize(config = nil, options = nil)
@@ -22,7 +27,8 @@ module RuboCop
 
           @scopes = VariableScopeStack.new
           # FIXME: how to pass unsafe option?
-          @unsafe = false
+          @unsafe = true
+          @replaced_nodes = []
         end
 
         # FIXME
@@ -115,14 +121,11 @@ module RuboCop
           _ops, _add, a, b = *node
 
           if nice(a) && nice(b)
-            # FIXME
-            puts "found a zombie to kill"
-          else
-            # FIXME
-            puts "found a scary zombie, don't touch it!"
+            replaced_nodes << node
+            add_offense(node, :selector, MSG)
+          elsif unsafe
+            add_offense(node, :selector, MSG)
           end
-
-          add_offense(node, :selector, MSG)
         end
 
         def on_block(_node)
@@ -202,14 +205,26 @@ module RuboCop
             n_message == message
         end
 
-        # TODO: add autocorrection support
-        # def autocorrect(range)
-        #   @corrections << lambda do |corrector|
-        #     corrector.replace(range, "")
-        #   end
-        # end
+        def autocorrect(node)
+          @corrections << lambda do |corrector|
+            return unless replaced_nodes.include?(node)
+            _ops, message, arg1, arg2 = *node
 
-        attr_reader :scopes
+            new_ops = REPLACEMENT[message]
+            return unless new_ops
+
+            corrector.replace(node.loc.expression,
+              ops_replacement(new_ops, arg1, arg2))
+          end
+        end
+
+        def ops_replacement(new_ops, arg1, arg2)
+          "#{arg1.loc.expression.source} #{new_ops} " \
+            "#{arg2.loc.expression.source}"
+        end
+
+        attr_reader :scopes, :unsafe
+        attr_accessor :replaced_nodes
       end
     end
   end
