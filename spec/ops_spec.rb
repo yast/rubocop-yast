@@ -83,12 +83,12 @@ describe RuboCop::Cop::Yast::Ops do
       expect(new_source).to eq('"foo" + "bar"')
     end
 
-    #  FIXME: does not work work recursively
-    #  it 'auto-corrects nested Ops.add calls' do
-    #    new_source = autocorrect_source(cop,
-    #      'Ops.add("foo", Ops.add("bar", "baz"))')
-    #    expect(new_source).to eq('"foo" + "bar + baz"')
-    #  end
+    # FIXME: auto-correct does not work work recursively
+    xit "auto-corrects nested Ops.add calls" do
+      new_source = autocorrect_source(cop,
+        'Ops.add("foo", Ops.add("bar", "baz"))')
+      expect(new_source).to eq('"foo" + "bar + baz"')
+    end
 
     it "keeps unsafe call Ops.add(foo, bar)" do
       source = "foo = 1; Ops.add(foo, bar)"

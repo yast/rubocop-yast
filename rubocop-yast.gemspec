@@ -28,7 +28,8 @@ Gem::Specification.new do |spec|
   spec.test_files = spec.files.grep(/^spec\//)
   spec.extra_rdoc_files = ["LICENSE", "README.md"]
 
-  spec.add_development_dependency("rubocop", "~> 0.27")
+  spec.add_runtime_dependency("rubocop", "~> 0.27")
+
   spec.add_development_dependency("rake")
   spec.add_development_dependency("rspec", "~> 3.1.0")
   spec.add_development_dependency("simplecov")

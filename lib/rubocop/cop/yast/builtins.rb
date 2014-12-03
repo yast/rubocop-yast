@@ -16,7 +16,13 @@ module RuboCop
           # gettext helpers
           :dgettext,
           :dngettext,
-          :dpgettext
+          :dpgettext,
+          # crypt* helpers
+          :crypt,
+          :cryptmd5,
+          :cryptblowfish,
+          :cryptsha256,
+          :cryptsha512
         ]
 
         BUILTINS_NODES = [
@@ -35,6 +41,27 @@ module RuboCop
               ALLOWED_FUNCTIONS.include?(method_name)
 
           add_offense(node, :selector, format(MSG, method_name))
+        end
+
+        def autocorrect(node)
+          @corrections << lambda do |corrector|
+            _builtins, message, args = *node
+
+            new_code = builtins_replacement(message, args)
+
+            corrector.replace(node.loc.expression, new_code) if new_code
+          end
+        end
+
+        private
+
+        def builtins_replacement(message, args)
+          case message
+          when :getenv
+            "ENV[#{args.loc.expression.source}]"
+          when :time
+            "::Time.now.to_i"
+          end
         end
       end
     end
