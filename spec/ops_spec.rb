@@ -2,35 +2,42 @@
 
 require "spec_helper"
 
+def config(safe_mode: true)
+  conf = { "Yast/Ops" => { "SafeMode" => safe_mode } }
+  RuboCop::Config.new(conf)
+end
+
 describe RuboCop::Cop::Yast::Ops do
-  subject(:cop) { described_class.new }
+  context("In safe mode") do
+    subject(:cop) { described_class.new(config(safe_mode: true)) }
 
-  it "finds trivial Ops.add call" do
-    inspect_source(cop, ["Ops.add(2, 4)"])
+    it "finds trivial Ops.add call" do
+      inspect_source(cop, ["Ops.add(2, 4)"])
 
-    expect(cop.offenses.size).to eq(1)
-  end
+      expect(cop.offenses.size).to eq(1)
+    end
 
-  it "finds Ops.add call with variable" do
-    inspect_source(cop, ["foo = 2\n Ops.add(foo, 4)"])
+    it "finds Ops.add call with variable" do
+      inspect_source(cop, ["foo = 2\n Ops.add(foo, 4)"])
 
-    expect(cop.offenses.size).to eq(1)
-  end
+      expect(cop.offenses.size).to eq(1)
+    end
 
-  it "finds Ops.add call with variable inside condition" do
-    inspect_source(cop, ["foo = 1\nif true\nOps.add(foo, 4)\nend"])
+    it "finds Ops.add call with variable inside condition" do
+      inspect_source(cop, ["foo = 1\nif true\nOps.add(foo, 4)\nend"])
 
-    expect(cop.offenses.size).to eq(1)
-  end
+      expect(cop.offenses.size).to eq(1)
+    end
 
-  it "finds Ops.add call which cannot be safely replaced" do
-    inspect_source(cop, ["if true\nOps.add(foo, 4)\nend"])
+    it "ignores unsafe calls" do
+      inspect_source(cop, ["if true\nOps.add(foo, 4)\nend"])
 
-    expect(cop.offenses.size).to eq(1)
-  end
+      expect(cop.offenses).to be_empty
+    end
 
-  it "parses complex code" do
-    src = <<-EOF
+    # check that all node types are handled properly
+    it "parses complex code" do
+      src = <<-EOF
       module Foo
         class Bar
           def baz(arg)
@@ -54,32 +61,56 @@ describe RuboCop::Cop::Yast::Ops do
           end
         end
       end
-    EOF
+      EOF
 
-    inspect_source(cop, src)
+      inspect_source(cop, src)
 
-    expect(cop.offenses).to be_empty
+      expect(cop.offenses).to be_empty
+    end
+
+    it "auto-corrects Ops.add(2, 4) with 2 + 4" do
+      new_source = autocorrect_source(cop, "Ops.add(2, 4)")
+      expect(new_source).to eq("2 + 4")
+    end
+
+    it "auto-corrects Ops.add(a, b) with a + b" do
+      new_source = autocorrect_source(cop, "a = 1; b = 2; Ops.add(a, b)")
+      expect(new_source).to eq("a = 1; b = 2; a + b")
+    end
+
+    it 'auto-corrects Ops.add("foo", "bar") with "foo" + "bar"' do
+      new_source = autocorrect_source(cop, 'Ops.add("foo", "bar")')
+      expect(new_source).to eq('"foo" + "bar"')
+    end
+
+    #  FIXME: does not work work recursively
+    #  it 'auto-corrects nested Ops.add calls' do
+    #    new_source = autocorrect_source(cop,
+    #      'Ops.add("foo", Ops.add("bar", "baz"))')
+    #    expect(new_source).to eq('"foo" + "bar + baz"')
+    #  end
+
+    it "keeps unsafe call Ops.add(foo, bar)" do
+      source = "foo = 1; Ops.add(foo, bar)"
+      new_source = autocorrect_source(cop, source)
+      expect(new_source).to eq(source)
+    end
+
   end
 
-  it "auto-corrects Ops.add(2, 4) with 2 + 4" do
-    new_source = autocorrect_source(cop, "Ops.add(2, 4)")
-    expect(new_source).to eq("2 + 4")
-  end
+  context("In unsafe mode") do
+    subject(:cop) { described_class.new(config(safe_mode: false)) }
 
-  it "auto-corrects Ops.add(foo, bar) with foo + bar" do
-    new_source = autocorrect_source(cop, "foo = 1; bar = 2; Ops.add(foo, bar)")
-    expect(new_source).to eq("foo = 1; bar = 2; foo + bar")
-  end
+    it "finds unsafe Ops.add calls" do
+      inspect_source(cop, ["if true\nOps.add(foo, 4)\nend"])
 
-  it 'auto-corrects Ops.add("foo", "bar") with "foo" + "bar"' do
-    new_source = autocorrect_source(cop, 'Ops.add("foo", "bar")')
-    expect(new_source).to eq('"foo" + "bar"')
-  end
+      expect(cop.offenses.size).to eq(1)
+    end
 
-  it "keeps unsafe call Ops.add(foo, bar)" do
-    source = "foo = 1; Ops.add(foo, bar)"
-    new_source = autocorrect_source(cop, source)
-    expect(new_source).to eq(source)
+    it "auto-corrects unsafe call Ops.add(foo, bar) with foo + bar" do
+      new_source = autocorrect_source(cop, "Ops.add(foo, bar)")
+      expect(new_source).to eq("foo + bar")
+    end
   end
 
 end

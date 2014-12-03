@@ -1,0 +1,8 @@
+Yast/Builtins:
+  Description: "Check for obsolete Builtins.* calls"
+  Enabled: true
+
+Yast/Ops:
+  Description: "Check for obsolete Ops.* calls"
+  Enabled: true
+  SafeMode: true

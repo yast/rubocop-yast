@@ -23,11 +23,10 @@ module RuboCop
         MSG = "Ops call found"
 
         def initialize(config = nil, options = nil)
-          super
+          super(config, options)
 
           @scopes = VariableScopeStack.new
-          # FIXME: how to pass unsafe option?
-          @unsafe = true
+          @safe_mode = cop_config["SafeMode"]
           @replaced_nodes = []
         end
 
@@ -120,12 +119,10 @@ module RuboCop
           return unless call?(node, :Ops, :add)
           _ops, _add, a, b = *node
 
-          if nice(a) && nice(b)
-            replaced_nodes << node
-            add_offense(node, :selector, MSG)
-          elsif unsafe
-            add_offense(node, :selector, MSG)
-          end
+          return if !(nice(a) && nice(b)) && safe_mode
+
+          replaced_nodes << node
+          add_offense(node, :selector, MSG)
         end
 
         def on_block(_node)
@@ -207,7 +204,7 @@ module RuboCop
 
         def autocorrect(node)
           @corrections << lambda do |corrector|
-            return unless replaced_nodes.include?(node)
+            return if !replaced_nodes.include?(node) && !safe_mode
             _ops, message, arg1, arg2 = *node
 
             new_ops = REPLACEMENT[message]
@@ -223,7 +220,7 @@ module RuboCop
             "#{arg2.loc.expression.source}"
         end
 
-        attr_reader :scopes, :unsafe
+        attr_reader :scopes, :safe_mode
         attr_accessor :replaced_nodes
       end
     end
