@@ -11,7 +11,8 @@ end
 module RuboCop
   module Cop
     module Yast
-      # This cop check for Ops.* calls and can autocorrect safe places
+      # This cop checks for Ops.* calls, it can autocorrect safe places or
+      # all places in unsafe mode
       class Ops < Cop
         include Niceness
 
@@ -20,7 +21,7 @@ module RuboCop
           add: "+"
         }
 
-        MSG = "Ops call found"
+        MSG = "Obsolete Ops.%s call found"
 
         def initialize(config = nil, options = nil)
           super(config, options)
@@ -117,12 +118,11 @@ module RuboCop
 
         def on_send(node)
           return unless call?(node, :Ops, :add)
-          _ops, _add, a, b = *node
 
+          _ops, method, a, b = *node
           return if !(nice(a) && nice(b)) && safe_mode
 
-          replaced_nodes << node
-          add_offense(node, :selector, MSG)
+          add_offense(node, :selector, format(MSG, method))
         end
 
         def on_block(_node)
@@ -204,7 +204,6 @@ module RuboCop
 
         def autocorrect(node)
           @corrections << lambda do |corrector|
-            return if !replaced_nodes.include?(node) && !safe_mode
             _ops, message, arg1, arg2 = *node
 
             new_ops = REPLACEMENT[message]
@@ -221,7 +220,6 @@ module RuboCop
         end
 
         attr_reader :scopes, :safe_mode
-        attr_accessor :replaced_nodes
       end
     end
   end
