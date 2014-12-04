@@ -2,13 +2,6 @@
 
 require "spec_helper"
 
-def expect_y2milestone_offense(cop)
-  expect(cop.offenses.size).to eq(1)
-  expect(cop.offenses.first.line).to eq(1)
-  expect(cop.messages).to eq(["Builtin call `y2milestone` is obsolete, " \
-        "use native Ruby function instead."])
-end
-
 # these calls are found by the cop
 REPORTED_BUILTINS = [
   'Builtins.y2milestone("foo")',
@@ -29,21 +22,38 @@ IGNORED_BUILTINS = [
 ]
 
 # replaced code
+# rubocop:disable Style/AlignHash
 CORRECTED_BUILTINS = {
-  # logging
-  'Builtins.y2milestone("foo")'            => 'log.info "foo"',
-  'Builtins.y2milestone("foo: %1", foo)'   => 'log.info "foo: #{foo}"',
-  'Builtins.y2milestone("foo: %1%%", foo)' => 'log.info "foo: #{foo}%"',
-  'Builtins.y2warning("%1 %1", foo)'       => 'log.warn "#{foo} #{foo}"',
-  'Builtins.y2warning("%2 %2", foo, bar)'  => 'log.warn "#{bar} #{bar}"',
-  'Builtins.y2warning("%2 %1", foo, bar)'  => 'log.warn "#{bar} #{foo}"',
-  'Builtins.y2warning("%1", foo + bar)'    => 'log.warn "#{foo + bar}"',
-  # some general builtins
-  "Builtins.time()"                        => "::Time.now.to_i",
-  'Builtins.getenv("foo")'                 => 'ENV["foo"]',
-  "Builtins.getenv(foo)"                   => "ENV[foo]"
-}
+  # simple logging (outside class)
+  "Builtins.y2milestone('foo')" => "include Yast::Logger\nlog.info 'foo'",
+  "Builtins.y2milestone('foo: %1', foo)" =>
+    "include Yast::Logger\nlog.info 'foo: \#{foo}'",
+  "Builtins.y2milestone('foo: %1%%', foo)" =>
+    "include Yast::Logger\nlog.info 'foo: \#{foo}%'",
+  "Builtins.y2warning('%1 %1', foo)" =>
+    "include Yast::Logger\nlog.warn '\#{foo} \#{foo}'",
+  "Builtins.y2warning('%2 %2', foo, bar)" =>
+    "include Yast::Logger\nlog.warn '\#{bar} \#{bar}'",
+  "Builtins.y2warning('%2 %1', foo, bar)" =>
+    "include Yast::Logger\nlog.warn '\#{bar} \#{foo}'",
+  "Builtins.y2warning('%1', foo + bar)" =>
+    "include Yast::Logger\nlog.warn '\#{foo + bar}'",
 
+  # complex logging (inside a class)
+  "class Foo\n  Builtins.y2error('foo')\nend" =>
+    "class Foo\n  include Yast::Logger\n\n  log.error 'foo'\nend",
+  "  class Foo\n    Builtins.y2error('foo')\n  end" =>
+    "  class Foo\n    include Yast::Logger\n\n    log.error 'foo'\n  end",
+  "class Foo\n  include Yast::Logger\n  Builtins.y2error('foo')\nend" =>
+    "class Foo\n  include Yast::Logger\n  log.error 'foo'\nend",
+
+  # some general builtins
+  "Builtins.time()"          => "::Time.now.to_i",
+  "Builtins.getenv(\"foo\")" => "ENV[\"foo\"]",
+  "Builtins.getenv(foo)"     => "ENV[foo]"
+}
+# rubocop:enable Style/AlignHash
+#
 # kept code, no changes possible
 UNCHANGED_BUILTINS = [
   'Builtins.y2milestone(-1, "foo")',
@@ -51,7 +61,12 @@ UNCHANGED_BUILTINS = [
 ]
 
 describe RuboCop::Cop::Yast::Builtins do
-  subject(:cop) { described_class.new }
+  let(:config) do
+    conf = { "Style/IndentationWidth" => { "Width" => 2 } }
+    RuboCop::Config.new(conf)
+  end
+
+  subject(:cop) { described_class.new(config) }
 
   context "Code scanning" do
     REPORTED_BUILTINS.each do |code|
@@ -75,7 +90,7 @@ describe RuboCop::Cop::Yast::Builtins do
 
   context "Code autocorrection" do
     CORRECTED_BUILTINS.each do |old, new|
-      it "auto-corrects #{old} => #{new}" do
+      it "auto-corrects #{old.gsub("\n", "; ")} => #{new.gsub("\n", "; ")}" do
         expect(autocorrect_source(cop, old.dup)).to eq(new)
       end
     end

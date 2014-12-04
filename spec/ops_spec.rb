@@ -2,14 +2,14 @@
 
 require "spec_helper"
 
-def config(safe_mode: true)
-  conf = { "Yast/Ops" => { "SafeMode" => safe_mode } }
-  RuboCop::Config.new(conf)
-end
-
 describe RuboCop::Cop::Yast::Ops do
   context("In safe mode") do
-    subject(:cop) { described_class.new(config(safe_mode: true)) }
+    let(:config) do
+      conf = { "Yast/Ops" => { "SafeMode" => true } }
+      RuboCop::Config.new(conf)
+    end
+
+    subject(:cop) { described_class.new(config) }
 
     it "finds trivial Ops.add call" do
       inspect_source(cop, ["Ops.add(2, 4)"])
@@ -99,7 +99,12 @@ describe RuboCop::Cop::Yast::Ops do
   end
 
   context("In unsafe mode") do
-    subject(:cop) { described_class.new(config(safe_mode: false)) }
+    let(:config) do
+      conf = { "Yast/Ops" => { "SafeMode" => false } }
+      RuboCop::Config.new(conf)
+    end
+
+    subject(:cop) { described_class.new(config) }
 
     it "finds unsafe Ops.add calls" do
       inspect_source(cop, ["if true\nOps.add(foo, 4)\nend"])

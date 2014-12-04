@@ -59,15 +59,16 @@ module RuboCop
           @corrections << lambda do |corrector|
             _builtins, message, *args = *node
 
-            new_code = builtins_replacement(node, message, args)
+            new_code = builtins_replacement(node, corrector, message, args)
+            return unless new_code
 
-            corrector.replace(node.loc.expression, new_code) if new_code
+            corrector.replace(node.loc.expression, new_code)
           end
         end
 
         private
 
-        def builtins_replacement(node, message, args)
+        def builtins_replacement(node, corrector, message, args)
           case message
           when :getenv
             "ENV[#{args.first.loc.expression.source}]"
@@ -75,11 +76,11 @@ module RuboCop
             "::Time.now.to_i"
           when :y2debug, :y2milestone, :y2warning, :y2error,
               :y2security, :y2internal
-            replace_logging(node, message, args)
+            replace_logging(node, corrector, message, args)
           end
         end
 
-        def replace_logging(_node, message, args)
+        def replace_logging(node, corrector, message, args)
           format, *params = *args
 
           # we can replace only standard logging, not backtraces like
@@ -91,6 +92,8 @@ module RuboCop
 
           src_params = params.map { |arg| arg.loc.expression.source }
           src_format = format.loc.expression.source
+
+          add_logger_include(node, corrector)
           "log.#{method} #{interpolate(src_format, src_params)}"
         end
       end
