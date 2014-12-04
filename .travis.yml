@@ -2,4 +2,4 @@ language: ruby
 rvm:
   - 2.1
 script:
-  - COVERAGE=1 bundle exec rake
+  - bundle exec rake
