@@ -46,6 +46,8 @@ module RuboCop
           y2internal: "fatal"
         }
 
+        REPLACABLE = DEBUG_REPLACEMENENTS.keys + [:getenv, :time]
+
         def on_send(node)
           receiver, method_name, *_args = *node
 
@@ -56,9 +58,11 @@ module RuboCop
         end
 
         def autocorrect(node)
-          @corrections << lambda do |corrector|
-            _builtins, message, *args = *node
+          _builtins, message, *args = *node
 
+          raise CorrectionNotPossible unless REPLACABLE.include?(message)
+
+          @corrections << lambda do |corrector|
             new_code = builtins_replacement(node, corrector, message, args)
             return unless new_code
 
