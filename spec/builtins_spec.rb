@@ -26,6 +26,8 @@ IGNORED_BUILTINS = [
 CORRECTED_BUILTINS = {
   # simple logging (outside class)
   "Builtins.y2milestone('foo')" => "include Yast::Logger\nlog.info 'foo'",
+  "Builtins.y2milestone('foo')\nBuiltins.y2milestone('foo')" =>
+    "include Yast::Logger\nlog.info 'foo'\nlog.info 'foo'",
   "Builtins.y2milestone('foo: %1', foo)" =>
     "include Yast::Logger\nlog.info 'foo: \#{foo}'",
   "Builtins.y2milestone('foo: %1%%', foo)" =>

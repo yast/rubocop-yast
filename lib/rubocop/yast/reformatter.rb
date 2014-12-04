@@ -25,17 +25,30 @@ module RuboCop
       def add_logger_include(node, corrector)
         target_node = parent_node_type(node, [:class, :module])
 
-        return if logger_included?(target_node)
-        loc = target_node.loc
+        # already added or already present
+        return if added_includes_nodes.include?(target_node) ||
+            logger_included?(target_node)
 
-        if target_node.class_type? || target_node.module_type?
+        add_include_to_node(target_node, corrector)
+
+        added_includes_nodes << target_node
+      end
+
+      private
+
+      def add_include_to_node(node, corrector)
+        if node.class_type? || node.module_type?
           # indent the include statement
-          corrector.insert_after(class_logger_pos(target_node),
-            logger_include_code(loc.keyword.column))
+          corrector.insert_after(class_logger_pos(node),
+            logger_include_code(node.loc.keyword.column))
         else
           # otherwise put it at the top
-          corrector.insert_before(loc.expression, logger_include_code)
+          corrector.insert_before(node.loc.expression, logger_include_code)
         end
+      end
+
+      def added_includes_nodes
+        @added_include_nodes ||= []
       end
 
       # insert after "class Foo" or "class Foo < Bar" statement
