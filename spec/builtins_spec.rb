@@ -9,57 +9,81 @@ def expect_y2milestone_offense(cop)
         "use native Ruby function instead."])
 end
 
+# these calls are found by the cop
+REPORTED_BUILTINS = [
+  'Builtins.y2milestone("foo")',
+  # explicit Yast namespace
+  'Yast::Builtins.y2milestone("foo")',
+  '::Yast::Builtins.y2milestone("foo")'
+]
+
+# these are not reported: invalid or are allowed to use
+IGNORED_BUILTINS = [
+  # not in the Yast namespace
+  '::Builtins.y2milestone("foo")',
+  'Foo::Builtins.y2milestone("foo")',
+  # these do not have support in std Ruby
+  'Builtins.lsort(["foo"])',
+  'Builtins.crypt("foo")',
+  'Builtins.dgettext("domain", "foo")'
+]
+
+# replaced code
+CORRECTED_BUILTINS = {
+  # logging
+  'Builtins.y2milestone("foo")'            => 'log.info "foo"',
+  'Builtins.y2milestone("foo: %1", foo)'   => 'log.info "foo: #{foo}"',
+  'Builtins.y2milestone("foo: %1%%", foo)' => 'log.info "foo: #{foo}%"',
+  'Builtins.y2warning("%1 %1", foo)'       => 'log.warn "#{foo} #{foo}"',
+  'Builtins.y2warning("%2 %2", foo, bar)'  => 'log.warn "#{bar} #{bar}"',
+  'Builtins.y2warning("%2 %1", foo, bar)'  => 'log.warn "#{bar} #{foo}"',
+  'Builtins.y2warning("%1", foo + bar)'    => 'log.warn "#{foo + bar}"',
+  # some general builtins
+  "Builtins.time()"                        => "::Time.now.to_i",
+  'Builtins.getenv("foo")'                 => 'ENV["foo"]',
+  "Builtins.getenv(foo)"                   => "ENV[foo]"
+}
+
+# kept code, no changes possible
+UNCHANGED_BUILTINS = [
+  'Builtins.y2milestone(-1, "foo")',
+  'Builtins.y2warning(-2, "foo")'
+]
+
 describe RuboCop::Cop::Yast::Builtins do
   subject(:cop) { described_class.new }
 
-  it "reports Builtins.* calls" do
-    inspect_source(cop, ['Builtins.y2milestone("foo")'])
+  context "Code scanning" do
+    REPORTED_BUILTINS.each do |code|
+      it "reports #{code} calls" do
+        inspect_source(cop, [code])
 
-    expect_y2milestone_offense(cop)
+        expect(cop.offenses.size).to eq(1)
+        expect(cop.offenses.first.line).to eq(1)
+        expect(cop.messages.first).to match(/Builtin call `.*` is obsolete/)
+      end
+    end
+
+    IGNORED_BUILTINS.each do |code|
+      it "ignores #{code} call" do
+        inspect_source(cop, [code])
+
+        expect(cop.offenses).to be_empty
+      end
+    end
   end
 
-  it "reports Yast::Builtins.* calls" do
-    inspect_source(cop, ['Yast::Builtins.y2milestone("foo")'])
+  context "Code autocorrection" do
+    CORRECTED_BUILTINS.each do |old, new|
+      it "auto-corrects #{old} => #{new}" do
+        expect(autocorrect_source(cop, old.dup)).to eq(new)
+      end
+    end
 
-    expect_y2milestone_offense(cop)
-  end
-
-  it "reports ::Yast::Builtins.* calls" do
-    inspect_source(cop, ['::Yast::Builtins.y2milestone("foo")'])
-
-    expect_y2milestone_offense(cop)
-  end
-
-  it "ignores lsort builtin" do
-    inspect_source(cop, ['Builtins.lsort(["foo"])'])
-
-    expect(cop.offenses).to be_empty
-  end
-
-  it "ignores ::Builtins calls" do
-    inspect_source(cop, ['::Builtins.y2milestone("foo")'])
-
-    expect(cop.offenses).to be_empty
-  end
-
-  it "ignores Foo::Builtins calls" do
-    inspect_source(cop, ['Foo::Builtins.y2milestone("foo")'])
-
-    expect(cop.offenses).to be_empty
-  end
-
-  it "auto-corrects Builtins.time with ::Time.now.to_i" do
-    new_source = autocorrect_source(cop, "Builtins.time")
-    expect(new_source).to eq("::Time.now.to_i")
-  end
-
-  it 'auto-corrects Builtins.getenv("foo") with ENV["foo"]' do
-    new_source = autocorrect_source(cop, 'Builtins.getenv("foo")')
-    expect(new_source).to eq('ENV["foo"]')
-  end
-
-  it "auto-corrects Builtins.getenv(foo) with ENV[foo]" do
-    new_source = autocorrect_source(cop, "Builtins.getenv(foo)")
-    expect(new_source).to eq("ENV[foo]")
+    UNCHANGED_BUILTINS.each do |code|
+      it "does not auto-corrects #{code}" do
+        expect(autocorrect_source(cop, code)).to eq(code)
+      end
+    end
   end
 end

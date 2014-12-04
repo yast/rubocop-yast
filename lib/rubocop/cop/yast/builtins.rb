@@ -1,11 +1,14 @@
 # encoding: utf-8
 
+require "rubocop/yast/reformatter"
+
 module RuboCop
   module Cop
     module Yast
       # This cop checks for using obsoleted Yast Builtins calls
       class Builtins < Cop
         include AST::Sexp
+        include RuboCop::Yast::Reformatter
 
         MSG = "Builtin call `%s` is obsolete, use native Ruby function instead."
 
@@ -34,6 +37,15 @@ module RuboCop
           s(:const, s(:const, s(:cbase), :Yast), :Builtins)
         ]
 
+        DEBUG_REPLACEMENENTS = {
+          y2debug: "debug",
+          y2milestone: "info",
+          y2warning: "warn",
+          y2error: "error",
+          y2security: "error",
+          y2internal: "fatal"
+        }
+
         def on_send(node)
           receiver, method_name, *_args = *node
 
@@ -45,9 +57,9 @@ module RuboCop
 
         def autocorrect(node)
           @corrections << lambda do |corrector|
-            _builtins, message, args = *node
+            _builtins, message, *args = *node
 
-            new_code = builtins_replacement(message, args)
+            new_code = builtins_replacement(node, message, args)
 
             corrector.replace(node.loc.expression, new_code) if new_code
           end
@@ -55,13 +67,31 @@ module RuboCop
 
         private
 
-        def builtins_replacement(message, args)
+        def builtins_replacement(node, message, args)
           case message
           when :getenv
-            "ENV[#{args.loc.expression.source}]"
+            "ENV[#{args.first.loc.expression.source}]"
           when :time
             "::Time.now.to_i"
+          when :y2debug, :y2milestone, :y2warning, :y2error,
+              :y2security, :y2internal
+            replace_logging(node, message, args)
           end
+        end
+
+        def replace_logging(_node, message, args)
+          format, *params = *args
+
+          # we can replace only standard logging, not backtraces like
+          # Builtins.y2milestone(-1, "foo")
+          return unless format.type == :str
+
+          method = DEBUG_REPLACEMENENTS[message]
+          return unless method
+
+          src_params = params.map { |arg| arg.loc.expression.source }
+          src_format = format.loc.expression.source
+          "log.#{method} #{interpolate(src_format, src_params)}"
         end
       end
     end
