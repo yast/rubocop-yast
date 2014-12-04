@@ -46,6 +46,8 @@ CORRECTED_BUILTINS = {
     "  class Foo\n    include Yast::Logger\n\n    log.error 'foo'\n  end",
   "class Foo\n  include Yast::Logger\n  Builtins.y2error('foo')\nend" =>
     "class Foo\n  include Yast::Logger\n  log.error 'foo'\nend",
+  "class Foo < Bar\n  Builtins.y2error('foo')\nend" =>
+    "class Foo < Bar\n  include Yast::Logger\n\n  log.error 'foo'\nend",
 
   # some general builtins
   "Builtins.time()"          => "::Time.now.to_i",
@@ -53,7 +55,7 @@ CORRECTED_BUILTINS = {
   "Builtins.getenv(foo)"     => "ENV[foo]"
 }
 # rubocop:enable Style/AlignHash
-#
+
 # kept code, no changes possible
 UNCHANGED_BUILTINS = [
   'Builtins.y2milestone(-1, "foo")',

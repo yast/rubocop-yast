@@ -23,29 +23,35 @@ module RuboCop
       end
 
       def add_logger_include(node, corrector)
-        target_node = parent_node_type(node, :class)
+        target_node = parent_node_type(node, [:class, :module])
 
         return if logger_included?(target_node)
         loc = target_node.loc
 
-        if target_node.type == :class
+        if target_node.class_type? || target_node.module_type?
           # indent the include statement
-          column = loc.keyword.column
-          # insert after "class Foo" statement
-          corrector.insert_after(loc.name, logger_include(column))
+          corrector.insert_after(class_logger_pos(target_node),
+            logger_include_code(loc.keyword.column))
         else
           # otherwise put it at the top
-          corrector.insert_before(loc.expression, logger_include)
+          corrector.insert_before(loc.expression, logger_include_code)
         end
+      end
+
+      # insert after "class Foo" or "class Foo < Bar" statement
+      def class_logger_pos(node)
+        node.loc.operator ? node.children[1].loc.expression :  node.loc.name
       end
 
       # simple check for already present include
       def logger_included?(node)
+        return false if node.nil? || node.loc.nil?
+
         source = node.loc.expression.source
         !source.match(/include\s+(Yast::|)Logger/).nil?
       end
 
-      def logger_include(indent = nil)
+      def logger_include_code(indent = nil)
         code = "include Yast::Logger\n"
         return code unless indent
 
@@ -57,11 +63,11 @@ module RuboCop
         config.for_cop("IndentationWidth")["Width"]
       end
 
-      def parent_node_type(node, type)
+      def parent_node_type(node, types)
         target_node = node
 
         # find parent "class" node or the root node
-        while !target_node.root? && target_node.type != type
+        while !target_node.root? && !types.include?(target_node.type)
           target_node = target_node.parent
         end
 
