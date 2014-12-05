@@ -1,5 +1,6 @@
 # encoding: utf-8
 
+require "rubocop/yast/niceness"
 require "rubocop/yast/variable_scope"
 
 # We have encountered code that does satisfy our simplifying assumptions,
@@ -11,6 +12,8 @@ module RuboCop
   module Yast
     # This module tracks variable usage
     module TrackVariableScope
+      include Niceness
+
       def scopes
         @scopes ||= VariableScopeStack.new
       end

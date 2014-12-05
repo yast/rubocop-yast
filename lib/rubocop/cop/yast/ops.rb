@@ -1,6 +1,5 @@
 # encoding: utf-8
 
-require "rubocop/yast/niceness"
 require "rubocop/yast/track_variable_scope"
 
 # We have encountered code that does satisfy our simplifying assumptions,
@@ -14,8 +13,7 @@ module RuboCop
       # This cop checks for Ops.* calls, it can autocorrect safe places or
       # all places in unsafe mode
       class Ops < Cop
-        include Niceness
-        include ::RuboCop::Yast::TrackVariableScope
+        include RuboCop::Yast::TrackVariableScope
 
         # Ops replacement mapping
         REPLACEMENT = {

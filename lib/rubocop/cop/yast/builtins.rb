@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require "rubocop/yast/reformatter"
+require "rubocop/yast/track_variable_scope"
 
 module RuboCop
   module Cop
@@ -9,6 +10,7 @@ module RuboCop
       class Builtins < Cop
         include AST::Sexp
         include RuboCop::Yast::Reformatter
+        include RuboCop::Yast::TrackVariableScope
 
         MSG = "Builtin call `%s` is obsolete, use native Ruby function instead."
 
