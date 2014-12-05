@@ -1,7 +1,7 @@
 # encoding: utf-8
 
 require "rubocop/yast/niceness"
-require "rubocop/yast/variable_scope"
+require "rubocop/yast/track_variable_scope"
 
 # We have encountered code that does satisfy our simplifying assumptions,
 # translating it would not be correct.
@@ -15,6 +15,7 @@ module RuboCop
       # all places in unsafe mode
       class Ops < Cop
         include Niceness
+        include ::RuboCop::Yast::TrackVariableScope
 
         # Ops replacement mapping
         REPLACEMENT = {
@@ -26,7 +27,6 @@ module RuboCop
         def initialize(config = nil, options = nil)
           super(config, options)
 
-          @scopes = VariableScopeStack.new
           @safe_mode = cop_config["SafeMode"]
           @replaced_nodes = []
         end
@@ -227,7 +227,7 @@ module RuboCop
           end
         end
 
-        attr_reader :scopes, :safe_mode
+        attr_reader :safe_mode
       end
     end
   end
