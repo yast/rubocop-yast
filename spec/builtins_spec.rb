@@ -25,31 +25,31 @@ IGNORED_BUILTINS = [
 # rubocop:disable Style/AlignHash
 CORRECTED_BUILTINS = {
   # simple logging (outside class)
-  "Builtins.y2milestone('foo')" => "include Yast::Logger\nlog.info 'foo'",
+  "Builtins.y2milestone('foo')" => "include Yast::Logger\nlog.info \"foo\"",
   "Builtins.y2milestone('foo')\nBuiltins.y2milestone('foo')" =>
-    "include Yast::Logger\nlog.info 'foo'\nlog.info 'foo'",
+    "include Yast::Logger\nlog.info \"foo\"\nlog.info \"foo\"",
   "Builtins.y2milestone('foo: %1', foo)" =>
-    "include Yast::Logger\nlog.info 'foo: \#{foo}'",
+    "include Yast::Logger\nlog.info \"foo: \#{foo}\"",
   "Builtins.y2milestone('foo: %1%%', foo)" =>
-    "include Yast::Logger\nlog.info 'foo: \#{foo}%'",
+    "include Yast::Logger\nlog.info \"foo: \#{foo}%\"",
   "Builtins.y2warning('%1 %1', foo)" =>
-    "include Yast::Logger\nlog.warn '\#{foo} \#{foo}'",
+    "include Yast::Logger\nlog.warn \"\#{foo} \#{foo}\"",
   "Builtins.y2warning('%2 %2', foo, bar)" =>
-    "include Yast::Logger\nlog.warn '\#{bar} \#{bar}'",
+    "include Yast::Logger\nlog.warn \"\#{bar} \#{bar}\"",
   "Builtins.y2warning('%2 %1', foo, bar)" =>
-    "include Yast::Logger\nlog.warn '\#{bar} \#{foo}'",
+    "include Yast::Logger\nlog.warn \"\#{bar} \#{foo}\"",
   "Builtins.y2warning('%1', foo + bar)" =>
-    "include Yast::Logger\nlog.warn '\#{foo + bar}'",
+    "include Yast::Logger\nlog.warn \"\#{foo + bar}\"",
 
   # complex logging (inside a class)
   "class Foo\n  Builtins.y2error('foo')\nend" =>
-    "class Foo\n  include Yast::Logger\n\n  log.error 'foo'\nend",
+    "class Foo\n  include Yast::Logger\n\n  log.error \"foo\"\nend",
   "  class Foo\n    Builtins.y2error('foo')\n  end" =>
-    "  class Foo\n    include Yast::Logger\n\n    log.error 'foo'\n  end",
+    "  class Foo\n    include Yast::Logger\n\n    log.error \"foo\"\n  end",
   "class Foo\n  include Yast::Logger\n  Builtins.y2error('foo')\nend" =>
-    "class Foo\n  include Yast::Logger\n  log.error 'foo'\nend",
+    "class Foo\n  include Yast::Logger\n  log.error \"foo\"\nend",
   "class Foo < Bar\n  Builtins.y2error('foo')\nend" =>
-    "class Foo < Bar\n  include Yast::Logger\n\n  log.error 'foo'\nend",
+    "class Foo < Bar\n  include Yast::Logger\n\n  log.error \"foo\"\nend",
 
   # some general builtins
   "Builtins.time()"          => "::Time.now.to_i",

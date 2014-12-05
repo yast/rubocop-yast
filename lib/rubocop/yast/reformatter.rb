@@ -11,7 +11,7 @@ module RuboCop
       # @param [Array<String>] args argument list
       # @return [String] String with Ruby interpolation
       def interpolate(format, args)
-        format.gsub(/%./) do |match|
+        single_to_double(format).gsub(/%./) do |match|
           case match
           when "%%"
             "%"
@@ -22,6 +22,7 @@ module RuboCop
         end
       end
 
+      # Add Yast::Logger include somewhere up in the tree
       def add_logger_include(node, corrector)
         target_node = parent_node_type(node, [:class, :module])
 
@@ -36,6 +37,24 @@ module RuboCop
 
       private
 
+      # convert single quoted string to double quoted to allow using string
+      # interpolation
+      def single_to_double(str)
+        ret = str.dup
+        return ret if str.start_with?("\"")
+
+        # esacpe interpolation start (ignred in single quoted string)
+        ret.gsub!("\#{", "\\\#{")
+        # esacpe double quotes (not needed in single quoted string)
+        ret.gsub!("\"", "\\\"")
+
+        # replace the around quotes
+        ret[0] = "\""
+        ret[-1] = "\""
+        ret
+      end
+
+      # add the Yast::LOgger statement include to this node
       def add_include_to_node(node, corrector)
         if node.class_type? || node.module_type?
           # indent the include statement
@@ -47,6 +66,7 @@ module RuboCop
         end
       end
 
+      # remember the added iclude nodes to aoid multiple additions
       def added_includes_nodes
         @added_include_nodes ||= []
       end
@@ -64,6 +84,7 @@ module RuboCop
         !source.match(/include\s+(Yast::|)Logger/).nil?
       end
 
+      # format the include statement
       def logger_include_code(indent = nil)
         code = "include Yast::Logger\n"
         return code unless indent
@@ -72,10 +93,15 @@ module RuboCop
         indent_str + code
       end
 
+      # read the cnfigured indentation width
       def indentation_width
         config.for_cop("IndentationWidth")["Width"]
       end
 
+      # Find the parend node of the requested type
+      # @param [Array<Symbol>] types requested node types
+      # @param node
+      # @return the requested type node or the root node if not found
       def parent_node_type(node, types)
         target_node = node
 
