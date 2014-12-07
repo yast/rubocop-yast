@@ -10,7 +10,6 @@ module RuboCop
       class Builtins < Cop
         include AST::Sexp
         include RuboCop::Yast::Reformatter
-        include RuboCop::Yast::TrackVariableScope
 
         MSG = "Builtin call `%s` is obsolete, use native Ruby function instead."
 
@@ -48,7 +47,14 @@ module RuboCop
           y2internal: "fatal"
         }
 
-        REPLACABLE = DEBUG_REPLACEMENENTS.keys + [:getenv, :time]
+        ASGN_TYPES = [
+          :lvasgn,
+          :op_asgn,
+          :or_asgn,
+          :and_asgn
+        ]
+
+        REPLACEABLE = DEBUG_REPLACEMENENTS.keys + [:getenv, :time]
 
         def on_send(node)
           receiver, method_name, *_args = *node
@@ -56,13 +62,17 @@ module RuboCop
           return if !BUILTINS_NODES.include?(receiver) ||
               ALLOWED_FUNCTIONS.include?(method_name)
 
+          ignore_node(node) if ignore_logging_node?(node)
+
           add_offense(node, :selector, format(MSG, method_name))
         end
 
         def autocorrect(node)
           _builtins, message, *args = *node
 
-          raise CorrectionNotPossible unless REPLACABLE.include?(message)
+          if !REPLACEABLE.include?(message) || ignored_node?(node)
+            raise CorrectionNotPossible
+          end
 
           @corrections << lambda do |corrector|
             new_code = builtins_replacement(node, corrector, message, args)
@@ -74,7 +84,24 @@ module RuboCop
 
         private
 
+        def ignore_logging_node?(node)
+          _receiver, method_name, *_args = *node
+
+          # not a logging node
+          return false unless DEBUG_REPLACEMENENTS.key?(method_name)
+
+          target_node = parent_node_type(node, [:class, :module])
+
+          log_descendant = target_node.each_descendant.find do |n|
+            n && ASGN_TYPES.include?(n.type) && n.loc.name.source == "log"
+          end
+
+          log_descendant
+        end
+
         def builtins_replacement(node, corrector, message, args)
+          return if ignored_node?(node)
+
           case message
           when :getenv
             "ENV[#{args.first.loc.expression.source}]"

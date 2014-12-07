@@ -6,5 +6,5 @@ gemspec
 
 group :test do
   gem "coveralls", require: false if ENV["TRAVIS"]
-  # gem "byebug", require: false
+  gem "byebug", require: false if ENV["DEBUGGER"]
 end

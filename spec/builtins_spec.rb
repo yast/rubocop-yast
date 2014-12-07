@@ -60,8 +60,11 @@ CORRECTED_BUILTINS = {
 
 # kept code, no changes possible
 UNCHANGED_BUILTINS = [
+  # backtrace log cannot be simply replaced
   'Builtins.y2milestone(-1, "foo")',
-  'Builtins.y2warning(-2, "foo")'
+  'Builtins.y2warning(-2, "foo")',
+  # log variable assignment would rewrite the logger, keep it unchanged
+  'log = 1; Builtins.y2milestone("foo")'
 ]
 
 describe RuboCop::Cop::Yast::Builtins do

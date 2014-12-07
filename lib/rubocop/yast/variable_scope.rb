@@ -30,6 +30,8 @@ class VariableScope < Hash
   def []=(varname, state)
     super
   end
+
+  alias_method :variable?, :key?
 end
 
 # A stack of VariableScope
