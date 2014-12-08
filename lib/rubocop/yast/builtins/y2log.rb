@@ -122,13 +122,6 @@ module RuboCop
           indent_str + code
         end
       end
-
-      class Y2debug < Y2log; end
-      class Y2milestone < Y2log; end
-      class Y2warning < Y2log; end
-      class Y2error < Y2log; end
-      class Y2security < Y2log; end
-      class Y2internal < Y2log; end
     end
   end
 end

@@ -50,19 +50,24 @@ module RuboCop
 
         private
 
+        # rubocop:disable Metrics/MethodLength
         def builtin_mapping
+          # use the same instance for all logging functions
+          logging = RuboCop::Yast::Builtins::Y2log.new
+
           {
-            y2debug: RuboCop::Yast::Builtins::Y2debug.new,
-            y2milestone: RuboCop::Yast::Builtins::Y2milestone.new,
-            y2warning: RuboCop::Yast::Builtins::Y2warning.new,
-            y2error: RuboCop::Yast::Builtins::Y2error.new,
-            y2security: RuboCop::Yast::Builtins::Y2security.new,
-            y2internal: RuboCop::Yast::Builtins::Y2internal.new,
+            y2debug: logging,
+            y2milestone: logging,
+            y2warning: logging,
+            y2error: logging,
+            y2security: logging,
+            y2internal: logging,
 
             getenv: RuboCop::Yast::Builtins::Getenv.new,
             time: RuboCop::Yast::Builtins::Time.new
           }
         end
+        # rubocop:enable Metrics/MethodLength
 
         def builtin_handler(method)
           handlers[method] || default_handler
