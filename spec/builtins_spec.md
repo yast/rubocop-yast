@@ -347,6 +347,21 @@ include Yast::Logger
 log.warn "#{foo + bar}"
 ```
 
+It keeps a message with string interpolation
+
+**Original**
+
+```ruby
+Builtins.y2warning("foo: #{foo}")
+```
+
+**Translated**
+
+```ruby
+include Yast::Logger
+log.warn "foo: #{foo}"
+```
+
 It adds logger include to the class definition
 
 **Original**

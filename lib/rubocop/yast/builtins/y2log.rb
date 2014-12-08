@@ -37,7 +37,7 @@ module RuboCop
 
           # we can replace only standard logging, not backtraces like
           # Builtins.y2milestone(-1, "foo")
-          if !format.str_type? || ignore_node?(node)
+          if (!format.str_type? && !format.dstr_type?) || ignore_node?(node)
             raise RuboCop::Cop::CorrectionNotPossible
           end
 
@@ -49,19 +49,22 @@ module RuboCop
         def correction_lambda(node)
           lambda do |corrector|
             add_missing_logger(node, corrector)
-
             corrector.replace(node.loc.expression, replacement(node))
           end
         end
 
         def replacement(node)
           _receiver, method_name, format, *params = *node
-
-          src_params = params.map { |p| p.loc.expression.source }
-          src_format = format.loc.expression.source
           method = LOGGING_REPLACEMENENTS[method_name]
+          src_format = format.loc.expression.source
 
-          "log.#{method} #{interpolate(src_format, src_params)}"
+          if format.str_type?
+            src_params = params.map { |p| p.loc.expression.source }
+
+            "log.#{method} #{interpolate(src_format, src_params)}"
+          elsif format.dstr_type?
+            "log.#{method} #{src_format}"
+          end
         end
 
         def ignore_node?(node)
