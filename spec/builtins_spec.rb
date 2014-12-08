@@ -64,7 +64,9 @@ UNCHANGED_BUILTINS = [
   'Builtins.y2milestone(-1, "foo")',
   'Builtins.y2warning(-2, "foo")',
   # log variable assignment would rewrite the logger, keep it unchanged
-  'log = 1; Builtins.y2milestone("foo")'
+  'log = 1; Builtins.y2milestone("foo")',
+  # an unknown builtin
+  'Builtins.foo("bar")'
 ]
 
 describe RuboCop::Cop::Yast::Builtins do
