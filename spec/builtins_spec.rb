@@ -44,6 +44,11 @@ CORRECTED_BUILTINS = {
   # complex logging (inside a class)
   "class Foo\n  Builtins.y2error('foo')\nend" =>
     "class Foo\n  include Yast::Logger\n\n  log.error \"foo\"\nend",
+  "module Yast\n  class XMLClass < Module\n    def test\n      " \
+    "Builtins.y2error(\"foo\")\n      Builtins.y2error(\"foo\")\n    end\n" \
+    "  end\nend" => "module Yast\n  class XMLClass < Module\n    " \
+    "include Yast::Logger\n\n    def test\n      log.error \"foo\"\n" \
+    "      log.error \"foo\"\n    end\n  end\nend",
   "  class Foo\n    Builtins.y2error('foo')\n  end" =>
     "  class Foo\n    include Yast::Logger\n\n    log.error \"foo\"\n  end",
   "class Foo\n  include Yast::Logger\n  Builtins.y2error('foo')\nend" =>

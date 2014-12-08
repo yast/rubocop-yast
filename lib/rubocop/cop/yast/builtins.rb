@@ -1,6 +1,9 @@
 # encoding: utf-8
 
-require "rubocop/yast/builtin_call"
+require "rubocop/yast/builtins/builtin"
+require "rubocop/yast/builtins/getenv"
+require "rubocop/yast/builtins/time"
+require "rubocop/yast/builtins/y2log"
 
 module RuboCop
   module Cop
@@ -26,7 +29,7 @@ module RuboCop
           super(config, options)
 
           @handlers = builtin_mapping
-          @default_handler = RuboCop::Yast::BuiltinCall.new
+          @default_handler = RuboCop::Yast::Builtins::Builtin.new
         end
 
         def on_send(node)
@@ -49,15 +52,15 @@ module RuboCop
 
         def builtin_mapping
           {
-            y2debug: RuboCop::Yast::Y2debugCall.new,
-            y2milestone: RuboCop::Yast::Y2milestoneCall.new,
-            y2warning: RuboCop::Yast::Y2warningCall.new,
-            y2error: RuboCop::Yast::Y2errorCall.new,
-            y2security: RuboCop::Yast::Y2securityCall.new,
-            y2internal: RuboCop::Yast::Y2internalCall.new,
+            y2debug: RuboCop::Yast::Builtins::Y2debug.new,
+            y2milestone: RuboCop::Yast::Builtins::Y2milestone.new,
+            y2warning: RuboCop::Yast::Builtins::Y2warning.new,
+            y2error: RuboCop::Yast::Builtins::Y2error.new,
+            y2security: RuboCop::Yast::Builtins::Y2security.new,
+            y2internal: RuboCop::Yast::Builtins::Y2internal.new,
 
-            getenv: RuboCop::Yast::GetenvCall.new,
-            time: RuboCop::Yast::TimeCall.new
+            getenv: RuboCop::Yast::Builtins::Getenv.new,
+            time: RuboCop::Yast::Builtins::Time.new
           }
         end
 
