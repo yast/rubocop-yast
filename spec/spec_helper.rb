@@ -15,6 +15,7 @@ end
 SimpleCov.minimum_coverage 95
 
 SimpleCov.start do
+  # don't check code coverage in these subdirectories
   add_filter "/vendor/"
   add_filter "/spec/"
 end
@@ -30,11 +31,17 @@ RSpec.configure do |config|
   end
 end
 
-# As much as possible, we try to reuse RuboCop's spec environment.
+# reuse the Rubocop helper, provides some nice methods used in tests
 require File.join(
   Gem::Specification.find_by_name("rubocop").gem_dir, "spec", "spec_helper.rb"
 )
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
+
+def code_cleanup(s)
+  s.split("\n").reject { |l| l =~ /^\s*$/ }.first =~ /^(\s*)/
+  return s.dup if Regexp.last_match.nil?
+  s.gsub(Regexp.new("^#{Regexp.last_match[1]}"), "")[0..-2]
+end
 
 require "rubocop-yast"

@@ -26,3 +26,7 @@ Gemfile.lock
 
 /nbproject/private/
 /vendor/
+
+# generated files
+/spec/builtins_spec.rb
+/spec/*.html
