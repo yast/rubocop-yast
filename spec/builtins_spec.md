@@ -497,7 +497,7 @@ Builtins.y2milestone(-1, "foo")
 
 It does not convert code with a local variable 'log'
 
-**Original**
+**Unchanged**
 
 ```ruby
 log = 1
@@ -508,6 +508,20 @@ Builtins.y2milestone("foo")
 
 Template
 --------
+
+It finds an offense
+
+**Offense**
+
+```ruby
+```
+
+This code is OK
+
+**Accepted**
+
+```ruby
+```
 
 It translates.
 
