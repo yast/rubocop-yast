@@ -20,6 +20,9 @@ The goal is to create a Rubocop plugin which can check for
 covert some ugly code parts introduced by the automatic code conversion done by
 [YCP Killer](https://github.com/yast/ycp-killer) (conversion from YCP to Ruby).
 
+Check [the test descriptions](spec/builtins_spec) to see the examples of offense
+detection and code conversion.
+
 *The plugin is currently in early development, always manually check the chages
 done by the plugin! It can eat your code... ;-)*
 
@@ -27,8 +30,16 @@ done by the plugin! It can eat your code... ;-)*
 Installation
 ------------
 
+The plugin is published at [rubygems.org](https://rubygems.org/gems/rubocop-yast),
+you can install it using the `gem` command:
+
+```shell
+sudo gem install rubocop-yast
+```
+
 Usage
 -----
+
 
 
 Configuration
