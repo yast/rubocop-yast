@@ -40,7 +40,17 @@ sudo gem install rubocop-yast
 Usage
 -----
 
+You need to manually load the Yast plugin into RuboCop to run the extra checks.
+There are two options:
 
+- Use `--require rubocop-yast` command line option when invoking `rubocop`
+- Enable the plugin in `.rubocop.yml` file:
+```yaml
+require:
+ - rubocop-yast
+```
+
+See the [RuboCop documentation](https://github.com/bbatsov/rubocop#loading-extensions).
 
 Configuration
 -------------
