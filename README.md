@@ -89,3 +89,45 @@ bundle install --path vendor/bundle
 * [`spec`](spec) contains tests, some tests are automatically generated from a MarkDown
   documentation
 
+### Running Tests
+
+```
+bundle exec rake
+```
+ 
+By default the tests check the code coverage, if it is below 95% the test fails although
+there was no test failure.
+ 
+### Autocorrecting Rubocop Issues
+ 
+```
+bundle exec rake rubocop:auto_correct
+```
+ 
+You can also load the plugin itself to verify that plugin loading works correctly.
+(Plugin loading is not covered by tests as it needs the base Rubocop framework.)
+
+```
+bundle exec rubocop -r rubocop-yast
+```
+
+### Building a Gem
+
+```
+bundle exec rake build
+```
+
+This builds `pkg/rubocop-yast-<version>.gem` gem file, it can be installed locally using
+```
+sudo gem install --local pkg/rubocop-yast-<version>.gem
+```
+
+### Publishing the Gem to Rubygems.org
+
+Increase the version in [`lib/rubocop/yast/version.rb`](lib/rubocop/yast/version.rb) file
+and then run:
+
+```
+bundle exec rake release
+```
+
