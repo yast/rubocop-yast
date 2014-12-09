@@ -1,5 +1,7 @@
 require "redcarpet"
 
+require_relative "rspec_code"
+
 # Utility functions for manipulating code.
 module Code
   INDENT_STEP = 2
@@ -52,6 +54,8 @@ end
 
 # Renders a Markdown file to an RSpec test script
 class RSpecRenderer < Redcarpet::Render::Base
+  include RspecCode
+
   IGNORED_HEADERS = [
     "Table Of Contents",
     "Description"
@@ -109,6 +113,8 @@ class RSpecRenderer < Redcarpet::Render::Base
       @original_code = @translated_code = escaped_code
     when :offense
       @offense = escaped_code
+    when :accepted
+      @accepted_code = escaped_code
     else
       raise "Invalid next code block type: #{@next_block_type}.\n#{code}"
     end
@@ -117,6 +123,7 @@ class RSpecRenderer < Redcarpet::Render::Base
 
     add_translation_block if @original_code && @translated_code
     add_offense_block if @offense
+    add_accepted_block if @accepted_code
 
     nil
   end
@@ -187,34 +194,13 @@ class RSpecRenderer < Redcarpet::Render::Base
     @offense = nil
   end
 
-  # rubocop:disable Metrics/MethodLength
-  def generate_translation_code
-    [
-      "original_code = code_cleanup(<<-EOT)",
-      Code.indent(@original_code),
-      "EOT",
-      "",
-      "translated_code = code_cleanup(<<-EOT)",
-      Code.indent(@translated_code),
-      "EOT",
-      "",
-      "cop = RuboCop::Cop::Yast::Builtins.new",
-      "expect(autocorrect_source(cop, original_code)).to eq(translated_code)"
-    ].join("\n")
-  end
+  def add_accepted_block
+    current_describe.blocks << It.new(
+      description: @description,
+      code:        generate_accepted_code,
+      skip:        @description =~ /XFAIL/
+    )
 
-  def generate_offense_code
-    [
-      "code = code_cleanup(<<-EOT)",
-      Code.indent(@offense),
-      "EOT",
-      "",
-      "cop = RuboCop::Cop::Yast::Builtins.new",
-      "inspect_source(cop, [code])",
-      "",
-      "expect(cop.offenses.size).to eq(1)",
-      "expect(cop.messages.first).to match(/Builtin call `.*` is obsolete/)"
-    ].join("\n")
+    @accepted_code = nil
   end
-  # rubocop:enable Metrics/MethodLength
 end

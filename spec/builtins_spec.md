@@ -48,6 +48,32 @@ It finds builtin in explicit ::Yast namespace
 ::Yast::Builtins.y2milestone("foo")
 ```
 
+Builtins in the ::Builtins name space are ignored
+
+**Accepted**
+
+```ruby
+::Builtins.y2milestone("foo")
+```
+
+Builtins in non Yast name space are ignored
+
+**Accepted**
+
+```ruby
+Foo::Builtins.y2milestone("foo")
+```
+
+lsort(), crypt and gettext builtins are allowed
+
+**Accepted**
+
+```ruby
+Builtins.lsort(["foo"])
+Builtins.crypt("foo")
+Builtins.dgettext("domain", "foo")
+```
+
 It does not change unknown builtins
 
 **Unchanged**
