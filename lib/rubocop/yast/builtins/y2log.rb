@@ -28,16 +28,24 @@ module RuboCop
           :and_asgn
         ]
 
+        TYPES_WITHOUT_ARG = [
+          :dstr,
+          :send,
+          :lvar
+        ]
+
         def initialize
           @added_includes = []
         end
 
         def correction(node)
-          _receiver, _method_name, format, *_params = *node
+          _receiver, _method_name, format, *params = *node
 
           # we can replace only standard logging, not backtraces like
-          # Builtins.y2milestone(-1, "foo")
-          if (!format.str_type? && !format.dstr_type?) || ignore_node?(node)
+          # Builtins.y2milestone(-1, "foo") or unsafe code like
+          # fmt = "%1: %2"; Builtins.y2milestone(fmt, foo, bar)
+          if !((TYPES_WITHOUT_ARG.include?(format.type) && params.empty?) ||
+               (format.str_type?)) || ignore_node?(node)
             raise RuboCop::Cop::CorrectionNotPossible
           end
 
@@ -62,7 +70,7 @@ module RuboCop
             src_params = params.map { |p| p.loc.expression.source }
 
             "log.#{method} #{interpolate(src_format, src_params)}"
-          elsif format.dstr_type?
+          else
             "log.#{method} #{src_format}"
           end
         end

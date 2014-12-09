@@ -332,7 +332,7 @@ include Yast::Logger
 log.warn "#{bar} #{foo}"
 ```
 
-It keep the original statements in interpolated string
+It keeps the original statements in interpolated string
 
 **Original**
 
@@ -347,7 +347,7 @@ include Yast::Logger
 log.warn "#{foo + bar}"
 ```
 
-It keeps a message with string interpolation
+It converts a log with string interpolation
 
 **Original**
 
@@ -360,6 +360,61 @@ Builtins.y2warning("foo: #{foo}")
 ```ruby
 include Yast::Logger
 log.warn "foo: #{foo}"
+```
+
+It converts a log with a message variable
+
+**Original**
+
+```ruby
+msg = "message"
+Builtins.y2warning(msg)
+```
+
+**Translated**
+
+```ruby
+include Yast::Logger
+msg = "message"
+log.warn msg
+```
+
+It converts a log with function call
+
+**Original**
+
+```ruby
+Builtins.y2warning(msg)
+```
+
+**Translated**
+
+```ruby
+include Yast::Logger
+log.warn msg
+```
+
+It doesn't convert a log with extra parameters
+
+**Unchanged**
+
+```ruby
+Builtins.y2warning(msg, arg1, arg2)
+```
+
+It converts log with operator call
+
+**Original**
+
+```ruby
+Builtins.y2warning(msg1 + msg2)
+```
+
+**Translated**
+
+```ruby
+include Yast::Logger
+log.warn msg1 + msg2
 ```
 
 It adds logger include to the class definition
