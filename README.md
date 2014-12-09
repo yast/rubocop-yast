@@ -18,7 +18,7 @@ The goal is to create a Rubocop plugin which can check for
 covert some ugly code parts introduced by the automatic code conversion done by
 [YCP Killer](https://github.com/yast/ycp-killer) (conversion from YCP to Ruby).
 
-Check [the test descriptions](spec/builtins_spec) to see the examples of offense
+Check [the test descriptions](spec/builtins_spec.md) to see the examples of offense
 detection and code conversion.
 
 *The plugin is currently in early development, always manually check the chages
