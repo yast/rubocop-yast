@@ -21,6 +21,42 @@ be used instead of these wrappers.
 
 The Cop can autocorrect some trivial or easy translatable builtins.
 
+Generic Tests
+-------------
+
+It reports y2milestone builtin as offense
+
+**Offense**
+
+```ruby
+Builtins.y2milestone("foo")
+```
+
+It finds builtin in explicit Yast namespace
+
+**Offense**
+
+```ruby
+Yast::Builtins.y2milestone("foo")
+```
+
+It finds builtin in explicit ::Yast namespace
+
+**Offense**
+
+```ruby
+::Yast::Builtins.y2milestone("foo")
+```
+
+It does not change unknown builtins
+
+**Unchanged**
+
+```ruby
+Builtins.foo()
+```
+
+
 Builtins.time()
 ---------------
 

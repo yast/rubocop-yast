@@ -1,7 +1,5 @@
 require "redcarpet"
 
-# require_relative "../lib/rubocop-yast"
-
 # Utility functions for manipulating code.
 module Code
   INDENT_STEP = 2
@@ -56,7 +54,7 @@ end
 class RSpecRenderer < Redcarpet::Render::Base
   IGNORED_HEADERS = [
     "Table Of Contents",
-    "Concepts"
+    "Description"
   ]
 
   def initialize
@@ -98,34 +96,31 @@ class RSpecRenderer < Redcarpet::Render::Base
     nil
   end
 
-  # rubocop:disable Metrics/MethodLength
+  # rubocop:disable Metrics/MethodLength, Metrics/CyclomaticComplexity:
   def block_code(code, _language)
+    escaped_code = escape(code[0..-2])
+
     case @next_block_type
     when :original
-      @original_code = escape(code[0..-2])
+      @original_code = escaped_code
     when :translated
-      @translated_code = escape(code[0..-2])
+      @translated_code = escaped_code
     when :unchanged
-      @original_code = @translated_code = code[0..-2]
+      @original_code = @translated_code = escaped_code
+    when :offense
+      @offense = escaped_code
     else
       raise "Invalid next code block type: #{@next_block_type}.\n#{code}"
     end
+
     @next_block_type = :unknown
 
-    if @original_code && @translated_code
-      current_describe.blocks << It.new(
-        description: @description,
-        code:        generate_translation_code,
-        skip:        @description =~ /XFAIL/
-      )
-
-      @original_code   = nil
-      @translated_code = nil
-    end
+    add_translation_block if @original_code && @translated_code
+    add_offense_block if @offense
 
     nil
   end
-  # rubocop:enable Metrics/MethodLength
+  # rubocop:enable Metrics/MethodLength, Metrics/CyclomaticComplexity:
 
   # escape ruby interpolation
   def escape(code)
@@ -171,6 +166,27 @@ class RSpecRenderer < Redcarpet::Render::Base
     describe
   end
 
+  def add_translation_block
+    current_describe.blocks << It.new(
+      description: @description,
+      code:        generate_translation_code,
+      skip:        @description =~ /XFAIL/
+    )
+
+    @original_code   = nil
+    @translated_code = nil
+  end
+
+  def add_offense_block
+    current_describe.blocks << It.new(
+      description: @description,
+      code:        generate_offense_code,
+      skip:        @description =~ /XFAIL/
+    )
+
+    @offense = nil
+  end
+
   # rubocop:disable Metrics/MethodLength
   def generate_translation_code
     [
@@ -184,6 +200,20 @@ class RSpecRenderer < Redcarpet::Render::Base
       "",
       "cop = RuboCop::Cop::Yast::Builtins.new",
       "expect(autocorrect_source(cop, original_code)).to eq(translated_code)"
+    ].join("\n")
+  end
+
+  def generate_offense_code
+    [
+      "code = code_cleanup(<<-EOT)",
+      Code.indent(@offense),
+      "EOT",
+      "",
+      "cop = RuboCop::Cop::Yast::Builtins.new",
+      "inspect_source(cop, [code])",
+      "",
+      "expect(cop.offenses.size).to eq(1)",
+      "expect(cop.messages.first).to match(/Builtin call `.*` is obsolete/)"
     ].join("\n")
   end
   # rubocop:enable Metrics/MethodLength
