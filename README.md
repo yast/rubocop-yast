@@ -71,4 +71,21 @@ Yast/Ops:
 Development
 -----------
 
+### Prerequisites
+
+For development you need some extra development gems. The best way is to install them with [Bundler](http://bundler.io/). To avoid a possible collision with system gems it is recommended
+to install the gems into a local subdirectory using
+
+```shell
+bundle install --path vendor/bundle
+```
+
+### Source Directories
+
+* [`config/default.yml`](config/default.yml) contains the default Cop configurations
+* [`lib/rubocop/cop/yast`](lib/rubocop/yast) contains Yast Cops (the checks which are called
+  from the main rubocop script)
+* [`lib/rubocop/yast`](lib/rubocop/yast) contains libraries used by the Cops
+* [`spec`](spec) contains tests, some tests are automatically generated from a MarkDown
+  documentation
 
