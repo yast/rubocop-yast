@@ -10,9 +10,7 @@ rubocop-yast
 
 
 This is a plugin for [RuboCop](https://github.com/bbatsov/rubocop)
-a Ruby static code analyzer.
-
-It was inspired by [Rubocop-Rspec](https://github.com/nevir/rubocop-rspec)
+a Ruby static code analyzer. It was inspired by [Rubocop-Rspec](https://github.com/nevir/rubocop-rspec)
 and [YCP Zombie Killer](https://github.com/yast/zombie-killer).
 
 The goal is to create a Rubocop plugin which can check for
@@ -55,6 +53,20 @@ See the [RuboCop documentation](https://github.com/bbatsov/rubocop#loading-exten
 Configuration
 -------------
 
+You can configure Rubocop-Yast the same way as the standard RuboCop checks
+(see the [RuboCop configuration](https://github.com/bbatsov/rubocop#configuration)):
+
+```yaml
+# Check for obsolete Builtins.* calls
+Yast/Builtins:
+  Enabled: true
+
+# Check for obsolete Ops.* calls
+Yast/Ops:
+  Enabled: true
+  # in the safe mode only safe places are reported and fixed
+  SafeMode: true
+```
 
 Development
 -----------
