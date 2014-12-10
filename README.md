@@ -35,6 +35,9 @@ you can install it using the `gem` command:
 sudo gem install rubocop-yast
 ```
 
+You can also install the latest development version directly from the Git repository,
+see [Building a Gem](#building-a-gem) section below.
+
 Usage
 -----
 
