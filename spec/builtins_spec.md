@@ -4,10 +4,10 @@ Builtins Cop
 Table Of Contents
 -----------------
 
-1. Description
-1. Builtins.time()
-1. Builtins.getenv()
-1. Logging
+1. [Description](#description)
+1. [Builtins.time()](#builtinstime)
+1. [Builtins.getenv()](#builtinsgetenv)
+1. [Logging](#logging)
 
 Description
 -----------
