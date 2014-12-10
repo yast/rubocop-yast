@@ -6,3 +6,7 @@ Yast/Ops:
   Description: "Check for obsolete Ops.* calls"
   Enabled: true
   SafeMode: true
+
+Yast/LogVariable:
+  Description: "Check for using 'log' variable"
+  Enabled: true
