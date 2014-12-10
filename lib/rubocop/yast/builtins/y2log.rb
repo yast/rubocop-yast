@@ -88,6 +88,7 @@ module RuboCop
         # Add Yast::Logger include somewhere up in the tree
         def add_missing_logger(node, corrector)
           target_node = parent_node_type(node, [:class, :module])
+          target_node = target_node.children.first if target_node.begin_type?
 
           # already added or already present
           return if added_includes.include?(target_node) ||
