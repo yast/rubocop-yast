@@ -7,7 +7,7 @@ Table Of Contents
 1. [Description](#description)
 1. [Builtins.time()](#builtinstime)
 1. [Builtins.getenv()](#builtinsgetenv)
-1. [Logging](#logging)
+1. [Logging - Builtins.y2debug(),...](#logging---builtinsy2debug)
 
 Description
 -----------
@@ -147,8 +147,8 @@ Builtins.getenv(Ops.add(foo, bar))
 ENV[Ops.add(foo, bar)]
 ```
 
-Logging
---------
+Logging - Builtins.y2debug(), ...
+----------------------------------
 
 It translates `y2debug` to `log.debug`
 
