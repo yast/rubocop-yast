@@ -50,5 +50,4 @@ describe RuboCop::Cop::Yast::LogVariable do
 
     expect(cop.offenses).to be_empty
   end
-
 end

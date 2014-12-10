@@ -95,7 +95,6 @@ describe RuboCop::Cop::Yast::Ops do
       new_source = autocorrect_source(cop, source)
       expect(new_source).to eq(source)
     end
-
   end
 
   context("In unsafe mode") do
@@ -117,5 +116,4 @@ describe RuboCop::Cop::Yast::Ops do
       expect(new_source).to eq("foo + bar")
     end
   end
-
 end
