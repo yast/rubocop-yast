@@ -76,8 +76,9 @@ Development
 
 ### Prerequisites
 
-For development you need some extra development gems. The best way is to install them with [Bundler](http://bundler.io/). To avoid a possible collision with system gems it is recommended
-to install the gems into a local subdirectory using
+For development you need some extra development gems. The best way is to install them with [Bundler](http://bundler.io/). To avoid a possible collision with system gems (esp. RSpec,
+Yast still uses version 2.14 while rubocop-yast uses 3.1) it is recommended
+to install the gems into a local subdirectory using:
 
 ```shell
 bundle install --path vendor/bundle
