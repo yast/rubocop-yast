@@ -39,7 +39,7 @@ module RuboCop
           return if !BUILTINS_NODES.include?(receiver) ||
               !builtin_handler(method_name).offense?(node)
 
-          add_offense(node, builtin_range(node), format(MSG, method_name))
+          add_offense(node, :selector, format(MSG, method_name))
         end
 
         def autocorrect(node)
@@ -49,13 +49,6 @@ module RuboCop
         end
 
         private
-
-        def builtin_range(node)
-          # report complete "Builtins.method" string as an offense
-          # see https://github.com/whitequark/parser/blob/master/doc/AST_FORMAT.md#to-receiver
-          Parser::Source::Range.new(node.loc.expression.source_buffer,
-            node.loc.expression.begin_pos, node.loc.begin.begin_pos)
-        end
 
         # rubocop:disable Metrics/MethodLength
         def builtin_mapping

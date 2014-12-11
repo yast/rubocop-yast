@@ -574,6 +574,14 @@ log = 1
 Builtins.y2milestone("foo")
 ```
 
+It finds an offense with missing parenthesis around argument
+
+**Offense**
+
+```ruby
+Builtins.y2milestone "Executing hook '#{name}'"
+```
+
 <!--
 
 Template

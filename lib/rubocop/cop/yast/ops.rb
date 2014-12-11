@@ -25,7 +25,7 @@ module RuboCop
         def initialize(config = nil, options = nil)
           super(config, options)
 
-          @safe_mode = cop_config["SafeMode"]
+          @safe_mode = cop_config && cop_config["SafeMode"]
           @replaced_nodes = []
         end
 

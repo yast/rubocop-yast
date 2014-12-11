@@ -9,3 +9,6 @@
 ### Changes
 
 ### Fixed Bugs
+
+- `Ops` Cop - fixed crash when using `--auto-gen-config` option
+- `Builtins` Cop - fixed crash when parenthesis were missing aroung method argument
