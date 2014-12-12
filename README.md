@@ -135,3 +135,4 @@ and then run:
 bundle exec rake release
 ```
 
+(Note: You need push permissions at Rubygems.org.)
