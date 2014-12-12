@@ -12,7 +12,7 @@ module RspecCode
       Code.indent(@translated_code),
       "EOT",
       "",
-      "cop = RuboCop::Cop::Yast::Builtins.new",
+      "cop = #{@tested_class}.new",
       "expect(autocorrect_source(cop, original_code)).to eq(translated_code)"
     ].join("\n")
   end
@@ -23,11 +23,10 @@ module RspecCode
       Code.indent(@offense),
       "EOT",
       "",
-      "cop = RuboCop::Cop::Yast::Builtins.new",
+      "cop = #{@tested_class}.new",
       "inspect_source(cop, [code])",
       "",
-      "expect(cop.offenses.size).to eq(1)",
-      "expect(cop.messages.first).to match(/Builtin call `.*` is obsolete/)"
+      "expect(cop.offenses.size).to eq(1)"
     ].join("\n")
   end
 
@@ -37,7 +36,7 @@ module RspecCode
       Code.indent(@accepted_code),
       "EOT",
       "",
-      "cop = RuboCop::Cop::Yast::Builtins.new",
+      "cop = #{@tested_class}.new",
       "inspect_source(cop, [code])",
       "",
       "expect(cop.offenses).to be_empty"

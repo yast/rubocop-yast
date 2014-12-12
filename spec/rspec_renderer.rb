@@ -61,11 +61,13 @@ class RSpecRenderer < Redcarpet::Render::Base
     "Description"
   ]
 
-  def initialize
-    super
+  def initialize(tested_class, description = nil)
+    super()
 
     @next_block_type = :unknown
-    @describe = Describe.new(description: "RuboCop-Yast", blocks: [])
+    @tested_class = tested_class
+    @describe = Describe.new(description: description || tested_class,
+                             blocks: [])
   end
 
   # preprocess the MarkDown input - remove comments

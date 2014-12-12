@@ -13,9 +13,9 @@ end
 require "redcarpet"
 require_relative "spec/rspec_renderer"
 
-def render_markdown(renderer_class, task)
+def render_markdown(renderer, task)
   puts "Rendering file: #{task.name}"
-  markdown = Redcarpet::Markdown.new(renderer_class, fenced_code_blocks: true)
+  markdown = Redcarpet::Markdown.new(renderer, fenced_code_blocks: true)
 
   string = markdown.render(File.read(task.prerequisites[0]))
   File.write(task.name, string)
@@ -24,7 +24,7 @@ end
 renderer = "spec/rspec_renderer.rb"
 
 file "spec/builtins_spec.rb" => ["spec/builtins_spec.md", renderer] do |t|
-  render_markdown(RSpecRenderer, t)
+  render_markdown(RSpecRenderer.new("RuboCop::Cop::Yast::Builtins"), t)
 end
 
 file "spec/builtins_spec.html" => ["spec/builtins_spec.md", renderer] do |t|
