@@ -26,7 +26,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2debug("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -38,7 +38,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -50,7 +50,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -62,7 +62,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2error("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -74,7 +74,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2security("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -86,7 +86,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2internal("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -99,7 +99,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       Builtins.y2milestone("foo")
       Builtins.y2milestone("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -112,7 +112,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone("foo: %1", foo)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -124,7 +124,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone("foo: %1%%", foo)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -136,7 +136,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning("%1 %1", foo)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -148,7 +148,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning("%2 %2", foo, bar)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -160,7 +160,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning("%2 %1", foo, bar)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -172,7 +172,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning("%1", foo + bar)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -184,7 +184,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning("foo: #{foo}")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -197,7 +197,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       msg = "message"
       Builtins.y2warning(msg)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -210,7 +210,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning(msg)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -222,7 +222,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning(msg, arg1, arg2)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is unchanged
 
   Scenario: Message with operator call is traslated
@@ -230,7 +230,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2warning(msg1 + msg2)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -244,7 +244,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
         Builtins.y2error('foo')
       end
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       class Foo
@@ -261,7 +261,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
           Builtins.y2error('foo')
         end
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
         class Foo
@@ -279,7 +279,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
         Builtins.y2error('foo')
       end
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       class Foo
@@ -295,7 +295,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
         Builtins.y2error('foo')
       end
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       class Foo < Bar
@@ -317,7 +317,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
         end
       end
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       module Yast
@@ -337,7 +337,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone('foo: %1', foo)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -349,7 +349,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone('"#{foo}"')
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       include Yast::Logger
@@ -361,7 +361,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone(-1, "foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is unchanged
 
   Scenario: Code with a local variable 'log' is kept unchanged
@@ -370,7 +370,7 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       log = 1
       Builtins.y2milestone("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is unchanged
 
   Scenario: Call with missing parenthesis around argument is also reported as an offense
@@ -378,6 +378,6 @@ Feature: Builtins.y2debug(), Builtins.y2milestone(), ...
       """
       Builtins.y2milestone "Executing hook '#{name}'"
       """
-    When I check it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins checks it
     Then offense "Builtin call `y2milestone` is obsolete" is found
 

@@ -9,8 +9,8 @@ Given(/^the original code is$/) do |original_code|
   @original_code = original_code
 end
 
-When(/^I correct it using (.*) cop$/) do |cop|
-  @cop = Object.const_get(cop).new
+When(/^the cop (.*) autocorrects it$/) do |name|
+  @cop = RuboCop::Cop::Cop.all.find { |cop| cop.cop_name == name }.new
   @corrected = autocorrect_source(@cop, @original_code.split("\n"))
 end
 
@@ -28,8 +28,8 @@ Then(/^the code is unchanged$/) do
   expect(@corrected).to eq(@original_code)
 end
 
-When(/^I check it using (.*) cop$/) do |cop|
-  @cop = Object.const_get(cop).new
+When(/^the cop (.*) checks it$/) do |name|
+  @cop = RuboCop::Cop::Cop.all.find { |cop| cop.cop_name == name }.new
   inspect_source(@cop, @original_code.split("\n"))
 end
 

@@ -8,7 +8,7 @@ Feature: Builtins.getenv()
       """
       Builtins.getenv("foo")
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       ENV["foo"]
@@ -20,7 +20,7 @@ Feature: Builtins.getenv()
       foo = bar
       Builtins.getenv(foo)
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       foo = bar
@@ -32,7 +32,7 @@ Feature: Builtins.getenv()
       """
       Builtins.getenv(Ops.add(foo, bar))
       """
-    When I correct it using RuboCop::Cop::Yast::Builtins cop
+    When the cop Yast/Builtins autocorrects it
     Then the code is converted to
       """
       ENV[Ops.add(foo, bar)]
