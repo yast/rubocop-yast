@@ -13,10 +13,7 @@ end
 require "cucumber/rake/task"
 Cucumber::Rake::Task.new(:features)
 
-require "rspec/core/rake_task"
-RSpec::Core::RakeTask.new(:spec)
-
 require "rubocop/rake_task"
 RuboCop::RakeTask.new(:rubocop)
 
-task default: [:spec, :features, :rubocop]
+task default: [:features, :rubocop]
