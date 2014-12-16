@@ -18,8 +18,8 @@ The goal is to create a Rubocop plugin which can check for
 covert some ugly code parts introduced by the automatic code conversion done by
 [YCP Killer](https://github.com/yast/ycp-killer) (conversion from YCP to Ruby).
 
-Check [the test descriptions](spec/builtins_spec.md) to see the examples of offense
-detection and code conversion.
+Check [the RSpec tests](spec) and [the Cucumber features](features)to see
+the examples of offense detection and code conversion.
 
 *The plugin is currently in early development, always manually check the chages
 done by the plugin! It can eat your code... ;-)*
@@ -135,4 +135,4 @@ and then run:
 bundle exec rake release
 ```
 
-(Note: You need push permissions at Rubygems.org.)
+(Note: You need push permissions at [rubygems.org](https://rubygems.org/gems/rubocop-yast).)

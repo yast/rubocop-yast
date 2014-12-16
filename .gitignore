@@ -28,5 +28,4 @@ Gemfile.lock
 /vendor/
 
 # generated files
-/spec/builtins_spec.rb
 /spec/*.html
