@@ -65,10 +65,16 @@ module RuboCop
 
           @corrections << lambda do |corrector|
             source_range = node.loc.expression
+            next if contains_comment?(source_range.source)
             new_node = Parser::AST::Node.new(:send, [arg1, new_op, arg2])
             corrector.replace(source_range, Unparser.unparse(new_node))
           end
         end
+
+        def contains_comment?(string)
+          /^[^'"\n]*#/.match(string)
+        end
+
         attr_reader :strict_mode
       end
     end
