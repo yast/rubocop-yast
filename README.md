@@ -67,8 +67,9 @@ Yast/Builtins:
 # Check for obsolete Ops.* calls
 Yast/Ops:
   Enabled: true
-  # in the safe mode only safe places are reported and fixed
-  SafeMode: true
+  # in strict mode all Ops calls are reported
+  # even if they cannot be autocorrected
+  StrictMode: true
 ```
 
 Development

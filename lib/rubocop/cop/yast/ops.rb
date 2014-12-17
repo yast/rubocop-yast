@@ -10,8 +10,11 @@ end
 module RuboCop
   module Cop
     module Yast
-      # This cop checks for Ops.* calls, it can autocorrect safe places or
-      # all places in unsafe mode
+      # This cop checks for Ops.* calls aka Zombies.
+      # Some of these can be autocorrected, mostly when we can prove
+      # that their arguments cannot be nil.
+      # In Strict Mode, it reports all zombies.
+      # In Permissive Mode, it report only zombies that can be autocorrected.
       class Ops < Cop
         include RuboCop::Yast::TrackVariableScope
 
@@ -25,17 +28,14 @@ module RuboCop
         def initialize(config = nil, options = nil)
           super(config, options)
 
-          @safe_mode = cop_config && cop_config["SafeMode"]
+          @strict_mode = cop_config && cop_config["StrictMode"]
           @replaced_nodes = []
         end
 
         def on_send(node)
           return unless call?(node, :Ops, :add)
-
-          _ops, method, a, b = *node
-          return if !(nice(a) && nice(b)) && safe_mode
-
-          add_offense(node, :selector, format(MSG, method))
+          return unless strict_mode || autocorrectable?(node)
+          add_offense(node, :selector, format(MSG, :add))
         end
 
         private
@@ -48,7 +48,15 @@ module RuboCop
             n_message == message
         end
 
+        # assumes node is an Ops.add
+        def autocorrectable?(node)
+          _ops, _method, a, b = *node
+          nice(a) && nice(b)
+        end
+
         def autocorrect(node)
+          return unless autocorrectable?(node)
+
           @corrections << lambda do |corrector|
             _ops, message, arg1, arg2 = *node
 
@@ -65,7 +73,7 @@ module RuboCop
             "#{arg2.loc.expression.source}"
         end
 
-        attr_reader :safe_mode
+        attr_reader :strict_mode
       end
     end
   end
