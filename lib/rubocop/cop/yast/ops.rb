@@ -1,6 +1,7 @@
 # encoding: utf-8
 
 require "rubocop/yast/track_variable_scope"
+require "unparser"
 
 # We have encountered code that does satisfy our simplifying assumptions,
 # translating it would not be correct.
@@ -20,7 +21,7 @@ module RuboCop
 
         # Ops replacement mapping
         REPLACEMENT = {
-          add: "+"
+          add: :+
         }
 
         MSG = "Obsolete Ops.%s call found"
@@ -57,22 +58,17 @@ module RuboCop
         def autocorrect(node)
           return unless autocorrectable?(node)
 
+          _ops, message, arg1, arg2 = *node
+
+          new_op = REPLACEMENT[message]
+          return unless new_op
+
           @corrections << lambda do |corrector|
-            _ops, message, arg1, arg2 = *node
-
-            new_ops = REPLACEMENT[message]
-            return unless new_ops
-
-            corrector.replace(node.loc.expression,
-              ops_replacement(new_ops, arg1, arg2))
+            source_range = node.loc.expression
+            new_node = Parser::AST::Node.new(:send, [arg1, new_op, arg2])
+            corrector.replace(source_range, Unparser.unparse(new_node))
           end
         end
-
-        def ops_replacement(new_ops, arg1, arg2)
-          "#{arg1.loc.expression.source} #{new_ops} " \
-            "#{arg2.loc.expression.source}"
-        end
-
         attr_reader :strict_mode
       end
     end

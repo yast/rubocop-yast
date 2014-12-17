@@ -29,6 +29,7 @@ Gem::Specification.new do |spec|
   spec.extra_rdoc_files = ["LICENSE", "README.md"]
 
   spec.add_runtime_dependency("rubocop", "~> 0.27")
+  spec.add_runtime_dependency("unparser", "~> 0")
 
   spec.add_development_dependency("rake")
   spec.add_development_dependency("rspec", "~> 3.1.0")
