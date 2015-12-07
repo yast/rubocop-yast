@@ -19,7 +19,7 @@ module RuboCop
       end
 
       # FIXME
-      def process(node)
+      def dont_process(node)
         return if node.nil?
         #  if ! @unsafe
         #  oops(node, RuntimeError.new("Unknown node type #{node.type}")) \
@@ -68,12 +68,14 @@ module RuboCop
       # end
 
       def on_case(node)
-        expr, *cases = *node
-        process(expr)
+        _expr, *cases = *node
+        # FIXME
+        # process(expr)
 
-        cases.each do |case_|
+        cases.each do |_case_|
           scopes.with_copy do
-            process(case_)
+            # FIXME
+            # process(case_)
           end
         end
 

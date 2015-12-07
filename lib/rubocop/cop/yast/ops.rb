@@ -33,6 +33,10 @@ module RuboCop
           @replaced_nodes = []
         end
 
+        def join_force?(force_class)
+          force_class == NiceForce
+        end
+
         def on_send(node)
           return unless call?(node, :Ops, :add)
           return unless strict_mode || autocorrectable?(node)
