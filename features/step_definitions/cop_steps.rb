@@ -1,4 +1,9 @@
 
+# mark features that were ported from Zombie Killer but do not work yet
+Given(/^this gets implemented/) do
+  pending
+end
+
 # inline code
 Given(/^the original code is "(.*)"$/) do |original_code|
   @original_code = original_code

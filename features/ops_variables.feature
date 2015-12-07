@@ -55,6 +55,7 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `def`s
+    Given this gets implemented
     Given the original code is
       """
       def a
@@ -69,6 +70,7 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `def self.`s
+    Given this gets implemented
     Given the original code is
       """
       v = 1
@@ -81,6 +83,7 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `module`s
+    Given this gets implemented
     Given the original code is
       """
       module A
@@ -88,10 +91,10 @@ Feature: variables
       end
 
       module B
-        # The assignment is needed to convince Ruby parser that the "v" reference in
-        # the "Ops.add" call later refers to a variable, not a method. This means it
-        # will be parsed as a "lvar" node (which can possibly be nice), not a "send"
-        # node (which can't be nice).
+        # The assignment is needed to convince Ruby parser that the "v"
+        # reference in the "Ops.add" call later refers to a variable, not a
+        # method. This means it will be parsed as a "lvar" node (which can
+        # possibly be nice), not a "send" node (which can't be nice).
 
         v = v
         Ops.add(v, "literal")
@@ -101,6 +104,7 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `class`s
+    Given this gets implemented
     Given the original code is
       """
       class A
@@ -108,10 +112,10 @@ Feature: variables
       end
 
       class B
-        # The assignment is needed to convince Ruby parser that the "v" reference in
-        # the "Ops.add" call later refers to a variable, not a method. This means it
-        # will be parsed as a "lvar" node (which can possibly be nice), not a "send"
-        # node (which can't be nice).
+        # The assignment is needed to convince Ruby parser that the "v"
+        # reference in the "Ops.add" call later refers to a variable, not a
+        # method. This means it will be parsed as a "lvar" node (which can
+        # possibly be nice), not a "send" node (which can't be nice).
 
         v = v
         Ops.add(v, "literal")
@@ -121,6 +125,7 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across singleton `class`s
+    Given this gets implemented
     Given the original code is
       """
       class << self
@@ -128,10 +133,10 @@ Feature: variables
       end
 
       class << self
-        # The assignment is needed to convince Ruby parser that the "v" reference in
-        # the "Ops.add" call later refers to a variable, not a method. This means it
-        # will be parsed as a "lvar" node (which can possibly be nice), not a "send"
-        # node (which can't be nice).
+        # The assignment is needed to convince Ruby parser that the "v"
+        # reference in the "Ops.add" call later refers to a variable, not a
+        # method. This means it will be parsed as a "lvar" node (which can
+        # possibly be nice), not a "send" node (which can't be nice).
 
         v = v
         Ops.add(v, "literal")
