@@ -55,7 +55,6 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `def`s
-    Given this gets implemented
     Given the original code is
       """
       def a
@@ -70,7 +69,6 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `def self.`s
-    Given this gets implemented
     Given the original code is
       """
       v = 1
@@ -83,7 +81,6 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `module`s
-    Given this gets implemented
     Given the original code is
       """
       module A
@@ -104,7 +101,6 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across `class`s
-    Given this gets implemented
     Given the original code is
       """
       class A
@@ -125,7 +121,6 @@ Feature: variables
     Then the code is unchanged
 
   Scenario: does not confuse variables across singleton `class`s
-    Given this gets implemented
     Given the original code is
       """
       class << self

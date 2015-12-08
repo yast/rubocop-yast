@@ -18,15 +18,6 @@ module RuboCop
         @scopes ||= VariableScopeStack.new
       end
 
-      # FIXME
-      def dont_process(node)
-        return if node.nil?
-        #  if ! @unsafe
-        #  oops(node, RuntimeError.new("Unknown node type #{node.type}")) \
-        #    unless HANDLED_NODE_TYPES.include? node.type
-        #  end
-      end
-
       # currently visible scope
       def scope
         scopes.innermost
@@ -41,23 +32,44 @@ module RuboCop
       end
 
       def on_def(node)
-        with_new_scope_rescuing_oops(node)
+        name, _, _ = *node
+        RuboCop::Yast.logger.debug "ONDEF #{name}"
+        RuboCop::Yast.logger.debug "CUR SCOPE #{scope.inspect}"
+        RuboCop::Yast.backtrace skip_frames: 50 if $DEBUG
+
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_defs(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_module(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_class(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_sclass(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
+      end
+
+      def on_if(node)
+        cond, then_body, else_body = *node
+        process(cond)
+
+        scopes.with_copy do
+          process(then_body)
+        end
+
+        scopes.with_copy do
+          process(else_body)
+        end
+
+        # clean slate
+        scope.clear
       end
 
       # def on_unless
@@ -68,14 +80,12 @@ module RuboCop
       # end
 
       def on_case(node)
-        _expr, *cases = *node
-        # FIXME
-        # process(expr)
+        expr, *cases = *node
+        process(expr)
 
-        cases.each do |_case_|
+        cases.each do |case_|
           scopes.with_copy do
-            # FIXME
-            # process(case_)
+            process(case_)
           end
         end
 
@@ -84,17 +94,20 @@ module RuboCop
       end
 
       def on_lvasgn(node)
+        super
         name, value = * node
         return if value.nil? # and-asgn, or-asgn, resbody do this
         scope[name].nice = nice(value)
       end
 
       def on_and_asgn(node)
+        super
         var, value = *node
         bool_op_asgn(var, value, :and)
       end
 
       def on_or_asgn(node)
+        super
         var, value = *node
         bool_op_asgn(var, value, :or)
       end
@@ -119,22 +132,22 @@ module RuboCop
 
       def on_rescue(node)
         # (:rescue, begin-block, resbody..., else-block-or-nil)
-        _begin_body, *_rescue_bodies, _else_body = *node
+        begin_body, *rescue_bodies, else_body = *node
 
-        # FIXME
-        #  @source_rewriter.transaction do
-        #    process(begin_body)
-        #    process(else_body)
-        #    rescue_bodies.each do |r|
-        #      process(r)
-        #    end
+        # FIXME: the transaction must be rolled back
+        # by the TooComplexToTranslateError
+        # @source_rewriter.transaction do
+        process(begin_body)
+        process(else_body)
+        rescue_bodies.each do |r|
+          process(r)
+        end
         #  end
-        #  rescue TooComplexToTranslateError
-        #    warning "begin-rescue is too complex to translate due to a retry"
-        #  end
+      rescue TooComplexToTranslateError
+        warn "begin-rescue is too complex to translate due to a retry"
       end
 
-      def on_resbody(_node)
+      def on_resbody(node)
         # How it is parsed:
         # (:resbody, exception-types-or-nil, exception-variable-or-nil, body)
         # exception-types is an :array
@@ -145,6 +158,7 @@ module RuboCop
         # and join begin-block with else-block, but it is little worth
         # because they will contain few zombies.
         scope.clear
+        super
       end
 
       def on_ensure(_node)
@@ -156,8 +170,7 @@ module RuboCop
 
       def on_retry(_node)
         # that makes the :rescue a loop, top-down data-flow fails
-        # FIXME
-        # raise TooComplexToTranslateError
+        raise TooComplexToTranslateError
       end
 
       private

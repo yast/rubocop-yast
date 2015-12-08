@@ -4,7 +4,6 @@ Feature: blocks
   After it, we start anew.
 
   Scenario: does not translate inside a block and resumes with a clean slate
-    Given this gets implemented
     Given the original code is
       """
       v = 1

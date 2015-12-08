@@ -9,7 +9,6 @@ Feature: loops
   to treat them as blocks.
 
   Scenario: does not translate anything in the outer scope that contains a `while`
-    Given this gets implemented
     Given the original code is
       """
       v = 1
@@ -22,7 +21,6 @@ Feature: loops
     Then the code is unchanged
 
   Scenario: does not translate anything in the outer scope that contains an `until`
-    Given this gets implemented
     Given the original code is
       """
       v = 1
@@ -90,7 +88,6 @@ Feature: loops
     Then the code is unchanged
 
   Scenario: does not translate inside a `for` and resumes with a clean slate
-    Given this gets implemented
     Given the original code is
       """
       v = 1

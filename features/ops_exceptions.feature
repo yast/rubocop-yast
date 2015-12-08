@@ -9,7 +9,6 @@ Feature: exceptions
   our translation possibilities.
 
   Scenario: translates the parts, joining else, rescue separately
-    Given this gets implemented
     Given the original code is
       """
       def foo
