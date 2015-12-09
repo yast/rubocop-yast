@@ -93,12 +93,4 @@ class OpsProcessor < Parser::AST::Processor
     _ops, _method, a, b = *node
     nice(a) && nice(b)
   end
-
-  def call?(node, namespace, message)
-    n_receiver, n_message = *node
-    n_receiver && n_receiver.type == :const &&
-      n_receiver.children[0].nil? &&
-      n_receiver.children[1] == namespace &&
-      n_message == message
-  end
 end
