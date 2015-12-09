@@ -19,7 +19,15 @@ module RuboCop
       class Ops < Cop
         # Ops replacement mapping
         REPLACEMENT = {
-          add: :+
+          add: :+,
+          # divide: :/,          # must also check divisor nonzero
+          # greater_than::>,      # handle ycp comparison
+          # greater_or_equal: :>=,# handle ycp comparison
+          # less_than: :<,        # handle ycp comparison
+          # less_or_equal: :<=,   # handle ycp comparison
+          modulo: :%,
+          multiply: :*,
+          subtract: :-
         }
 
         def initialize(config = nil, options = nil)
@@ -65,6 +73,7 @@ end
 # Niceness processor really
 class OpsProcessor < Parser::AST::Processor
   include RuboCop::Yast::TrackVariableScope
+  include RuboCop::Cop::Util # const_name
 
   attr_reader :cop
 
@@ -80,9 +89,12 @@ class OpsProcessor < Parser::AST::Processor
 
   def on_send(node)
     super
-    return unless call?(node, :Ops, :add)
+
+    receiver, message = *node
+    return unless const_name(receiver) == "Ops"
+    return unless RuboCop::Cop::Yast::Ops::REPLACEMENT.key?(message)
     return unless cop.strict_mode || autocorrectable?(node)
-    cop.add_offense(node, :selector, format(MSG, :add))
+    cop.add_offense(node, :selector, format(MSG, message))
   end
 
   # assumes node is an Ops.add
