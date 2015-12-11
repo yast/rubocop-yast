@@ -70,6 +70,8 @@ module RuboCop
 
         # clean slate
         scope.clear
+
+        node
       end
 
       # def on_unless
@@ -91,6 +93,8 @@ module RuboCop
 
         # clean slate
         scope.clear
+
+        node
       end
 
       def on_lvasgn(node)
@@ -98,32 +102,37 @@ module RuboCop
         name, value = * node
         return if value.nil? # and-asgn, or-asgn, resbody do this
         scope[name].nice = nice(value)
+        node
       end
 
       def on_and_asgn(node)
         super
         var, value = *node
         bool_op_asgn(var, value, :and)
+        node
       end
 
       def on_or_asgn(node)
         super
         var, value = *node
         bool_op_asgn(var, value, :or)
+        node
       end
 
-      def on_block(_node)
+      def on_block(node)
         # ignore body, clean slate
         scope.clear
+        node
       end
       alias_method :on_for, :on_block
 
-      def on_while(_node)
+      def on_while(node)
         # ignore both condition and body,
         # with a simplistic scope we cannot handle them
 
         # clean slate
         scope.clear
+        node
       end
       alias_method :on_until, :on_while
 
@@ -143,8 +152,10 @@ module RuboCop
           process(r)
         end
         #  end
+        node
       rescue TooComplexToTranslateError
         warn "begin-rescue is too complex to translate due to a retry"
+        node
       end
 
       def on_resbody(node)
@@ -161,11 +172,12 @@ module RuboCop
         super
       end
 
-      def on_ensure(_node)
+      def on_ensure(node)
         # (:ensure, guarded-code, ensuring-code)
         # guarded-code may be a :rescue or not
 
         scope.clear
+        node
       end
 
       def on_retry(_node)
