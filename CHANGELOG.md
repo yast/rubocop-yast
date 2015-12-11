@@ -2,6 +2,13 @@
 
 ## master (unreleased)
 
+## 0.0.8 (2015-12-11)
+
+### New Features
+
+- Nearly all Cucumber features converted from Zombie Killer work.
+  The exception is a `retry` in `rescue`.
+
 ## 0.0.7 (2015-12-08)
 
 ### Changes

@@ -3,6 +3,6 @@
 module RuboCop
   # Yast plugin settings
   module Yast
-    VERSION = "0.0.7.1"
+    VERSION = "0.0.8"
   end
 end
