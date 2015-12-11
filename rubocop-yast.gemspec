@@ -24,7 +24,7 @@ Gem::Specification.new do |spec|
     "*.gemspec",
     "Gemfile",
     "Rakefile"
-  ]
+  ].reject { |f| f =~ /~$/ }
   spec.test_files = spec.files.grep(/^spec\//)
   spec.extra_rdoc_files = ["LICENSE", "README.md"]
 
