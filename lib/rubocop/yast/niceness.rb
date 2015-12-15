@@ -18,7 +18,7 @@ module Niceness
 
   def nice(node)
     nice_literal(node) || nice_variable(node) || nice_send(node) ||
-      nice_begin(node)
+      nice_sformat(node) || nice_begin(node)
   end
 
   def nice_literal(node)
@@ -54,7 +54,25 @@ module Niceness
     args.size == arity && args.all? { |a| nice(a) }
   end
 
+  # Builtins.sformat is special in that it can produce nil
+  # but only if the format string is nil which is fortunately
+  # easy to rule out. Other args may be ugly but we don't care.
+  def nice_sformat(node)
+    return false unless node.type == :send
+    return false unless call?(node, :Builtins, :sformat)
+    _builtins, _sformat, format_string, *_other_args = *node
+    nice(format_string)
+  end
+
   def nice_begin(node)
     node.type == :begin && nice(node.children.last)
+  end
+
+  def call?(node, namespace, message)
+    n_receiver, n_message = *node
+    n_receiver && n_receiver.type == :const &&
+      n_receiver.children[0].nil? &&
+      n_receiver.children[1] == namespace &&
+      n_message == message
   end
 end

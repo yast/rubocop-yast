@@ -1,6 +1,15 @@
 # Tracks state for a variable
 class VariableState
-  attr_accessor :nice
+  def nice
+    RuboCop::Yast.logger.debug "GETN #{inspect}"
+    @nice
+  end
+
+  def nice=(v)
+    @nice = v
+    RuboCop::Yast.logger.debug "SETN #{inspect}"
+    v
+  end
 end
 
 # Tracks state for local variables visible at certain point.
@@ -23,11 +32,14 @@ class VariableScope < Hash
 
   # @return [VariableState] state
   def [](varname)
-    super
+    v = super
+    RuboCop::Yast.logger.debug "GET #{varname} -> #{v}"
+    v
   end
 
   # Set state for a variable
   def []=(varname, state)
+    RuboCop::Yast.logger.debug "SET #{varname} -> #{state}"
     super
   end
 
@@ -50,6 +62,7 @@ class VariableScopeStack
   # @return the scope as the block left it, popped from the stack
   def with_new(&block)
     @stack.push VariableScope.new
+    RuboCop::Yast.logger.debug "SCOPES #{@stack.inspect}"
     block.call
     @stack.pop
   end

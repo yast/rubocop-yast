@@ -18,15 +18,6 @@ module RuboCop
         @scopes ||= VariableScopeStack.new
       end
 
-      # FIXME
-      def process(node)
-        return if node.nil?
-        #  if ! @unsafe
-        #  oops(node, RuntimeError.new("Unknown node type #{node.type}")) \
-        #    unless HANDLED_NODE_TYPES.include? node.type
-        #  end
-      end
-
       # currently visible scope
       def scope
         scopes.innermost
@@ -41,23 +32,46 @@ module RuboCop
       end
 
       def on_def(node)
-        with_new_scope_rescuing_oops(node)
+        name, _, _ = *node
+        RuboCop::Yast.logger.debug "ONDEF #{name}"
+        RuboCop::Yast.logger.debug "CUR SCOPE #{scope.inspect}"
+        RuboCop::Yast.backtrace skip_frames: 50 if $DEBUG
+
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_defs(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_module(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_class(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
       end
 
       def on_sclass(node)
-        with_new_scope_rescuing_oops(node)
+        with_new_scope_rescuing_oops(node) { super }
+      end
+
+      def on_if(node)
+        cond, then_body, else_body = *node
+        process(cond)
+
+        scopes.with_copy do
+          process(then_body)
+        end
+
+        scopes.with_copy do
+          process(else_body)
+        end
+
+        # clean slate
+        scope.clear
+
+        node
       end
 
       # def on_unless
@@ -79,36 +93,46 @@ module RuboCop
 
         # clean slate
         scope.clear
+
+        node
       end
 
       def on_lvasgn(node)
+        super
         name, value = * node
         return if value.nil? # and-asgn, or-asgn, resbody do this
         scope[name].nice = nice(value)
+        node
       end
 
       def on_and_asgn(node)
+        super
         var, value = *node
         bool_op_asgn(var, value, :and)
+        node
       end
 
       def on_or_asgn(node)
+        super
         var, value = *node
         bool_op_asgn(var, value, :or)
+        node
       end
 
-      def on_block(_node)
+      def on_block(node)
         # ignore body, clean slate
         scope.clear
+        node
       end
       alias_method :on_for, :on_block
 
-      def on_while(_node)
+      def on_while(node)
         # ignore both condition and body,
         # with a simplistic scope we cannot handle them
 
         # clean slate
         scope.clear
+        node
       end
       alias_method :on_until, :on_while
 
@@ -117,22 +141,24 @@ module RuboCop
 
       def on_rescue(node)
         # (:rescue, begin-block, resbody..., else-block-or-nil)
-        _begin_body, *_rescue_bodies, _else_body = *node
+        begin_body, *rescue_bodies, else_body = *node
 
-        # FIXME
-        #  @source_rewriter.transaction do
-        #    process(begin_body)
-        #    process(else_body)
-        #    rescue_bodies.each do |r|
-        #      process(r)
-        #    end
+        # FIXME: the transaction must be rolled back
+        # by the TooComplexToTranslateError
+        # @source_rewriter.transaction do
+        process(begin_body)
+        process(else_body)
+        rescue_bodies.each do |r|
+          process(r)
+        end
         #  end
-        #  rescue TooComplexToTranslateError
-        #    warning "begin-rescue is too complex to translate due to a retry"
-        #  end
+        node
+      rescue TooComplexToTranslateError
+        warn "begin-rescue is too complex to translate due to a retry"
+        node
       end
 
-      def on_resbody(_node)
+      def on_resbody(node)
         # How it is parsed:
         # (:resbody, exception-types-or-nil, exception-variable-or-nil, body)
         # exception-types is an :array
@@ -143,19 +169,20 @@ module RuboCop
         # and join begin-block with else-block, but it is little worth
         # because they will contain few zombies.
         scope.clear
+        super
       end
 
-      def on_ensure(_node)
+      def on_ensure(node)
         # (:ensure, guarded-code, ensuring-code)
         # guarded-code may be a :rescue or not
 
         scope.clear
+        node
       end
 
       def on_retry(_node)
         # that makes the :rescue a loop, top-down data-flow fails
-        # FIXME
-        # raise TooComplexToTranslateError
+        raise TooComplexToTranslateError
       end
 
       private

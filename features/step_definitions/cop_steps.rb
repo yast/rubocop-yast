@@ -1,4 +1,9 @@
 
+# mark features that were ported from Zombie Killer but do not work yet
+Given(/^this gets implemented/) do
+  pending
+end
+
 # inline code
 Given(/^the original code is "(.*)"$/) do |original_code|
   @original_code = original_code
@@ -11,7 +16,7 @@ end
 
 When(/^the cop (.*) autocorrects it$/) do |name|
   @cop = RuboCop::Cop::Cop.all.find { |cop| cop.cop_name == name }.new
-  @corrected = autocorrect_source(@cop, @original_code.split("\n"))
+  @corrected = autocorrect_source(@cop, @original_code)
 end
 
 # inline code
@@ -30,7 +35,7 @@ end
 
 When(/^the cop (.*) checks it$/) do |name|
   @cop = RuboCop::Cop::Cop.all.find { |cop| cop.cop_name == name }.new
-  inspect_source(@cop, @original_code.split("\n"))
+  inspect_source(@cop, @original_code)
 end
 
 Then(/^the code is found correct$/) do

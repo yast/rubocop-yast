@@ -5,7 +5,7 @@ Yast/Builtins:
 Yast/Ops:
   Description: "Check for obsolete Ops.* calls"
   Enabled: true
-  SafeMode: true
+  StrictMode: true
 
 Yast/LogVariable:
   Description: "Check for using 'log' variable"
