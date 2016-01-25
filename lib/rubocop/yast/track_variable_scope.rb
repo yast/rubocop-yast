@@ -178,14 +178,10 @@ module RuboCop
 
       # does node have a particular type as a descendant?
       def descendant?(node, descendant_type)
-        needle_seen = false
-        catch :needle_seen do
-          on_node(descendant_type, node) do
-            needle_seen = true
-            throw :needle_seen
-          end
+        on_node(descendant_type, node) do
+          return true           # short circuit, returns from the method
         end
-        needle_seen
+        false
       end
 
       def oops(node, exception)
