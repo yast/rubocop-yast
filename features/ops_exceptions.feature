@@ -79,7 +79,6 @@ Feature: exceptions
     Then the code is unchanged
 
   Scenario: does not translate a begin-body when a rescue contains a retry
-    Given this gets implemented
     Given the original code is
       """
       def foo
@@ -89,7 +88,7 @@ Feature: exceptions
           maybe_raise
         rescue
           v = nil
-          retry
+          retry if cond
         end
       end
       """

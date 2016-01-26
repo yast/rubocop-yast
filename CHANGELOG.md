@@ -2,6 +2,12 @@
 
 ## master (unreleased)
 
+## 0.0.9 (2016-01-26)
+
+### Changes
+
+- Fixed: does not translate a `begin`-body when a `rescue` contains a `retry`.
+
 ## 0.0.8 (2015-12-11)
 
 ### New Features

@@ -3,11 +3,6 @@
 require "rubocop/yast/niceness"
 require "rubocop/yast/variable_scope"
 
-# We have encountered code that does satisfy our simplifying assumptions,
-# translating it would not be correct.
-class TooComplexToTranslateError < Exception
-end
-
 module RuboCop
   module Yast
     # This module tracks variable usage
@@ -143,18 +138,17 @@ module RuboCop
         # (:rescue, begin-block, resbody..., else-block-or-nil)
         begin_body, *rescue_bodies, else_body = *node
 
-        # FIXME: the transaction must be rolled back
-        # by the TooComplexToTranslateError
-        # @source_rewriter.transaction do
+        if rescue_bodies.any? { |r| descendant?(r, :retry) }
+          # do not process if a retry may cause a loop
+          return node
+        end
+
         process(begin_body)
         process(else_body)
         rescue_bodies.each do |r|
           process(r)
         end
-        #  end
-        node
-      rescue TooComplexToTranslateError
-        warn "begin-rescue is too complex to translate due to a retry"
+
         node
       end
 
@@ -180,12 +174,15 @@ module RuboCop
         node
       end
 
-      def on_retry(_node)
-        # that makes the :rescue a loop, top-down data-flow fails
-        raise TooComplexToTranslateError
-      end
-
       private
+
+      # does node have a particular type as a descendant?
+      def descendant?(node, descendant_type)
+        on_node(descendant_type, node) do
+          return true           # short circuit, returns from the method
+        end
+        false
+      end
 
       def oops(node, exception)
         puts "Node exception @ #{node.loc.expression}"
