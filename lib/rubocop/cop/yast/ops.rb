@@ -5,7 +5,7 @@ require "unparser"
 
 # We have encountered code that does satisfy our simplifying assumptions,
 # translating it would not be correct.
-class TooComplexToTranslateError < Exception
+class TooComplexToTranslateError < RuntimeError
 end
 
 module RuboCop
@@ -28,7 +28,7 @@ module RuboCop
           modulo: :%,
           multiply: :*,
           subtract: :-
-        }
+        }.freeze
 
         def initialize(config = nil, options = nil)
           super(config, options)
@@ -85,7 +85,7 @@ class OpsProcessor < Parser::AST::Processor
     process(processed_source.ast)
   end
 
-  MSG = "Obsolete Ops.%s call found"
+  MSG = "Obsolete Ops.%s call found".freeze
 
   def on_send(node)
     super

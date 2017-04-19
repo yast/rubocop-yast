@@ -119,7 +119,7 @@ module RuboCop
         scope.clear
         node
       end
-      alias_method :on_for, :on_block
+      alias on_for on_block
 
       def on_while(node)
         # ignore both condition and body,
@@ -129,7 +129,7 @@ module RuboCop
         scope.clear
         node
       end
-      alias_method :on_until, :on_while
+      alias on_until on_while
 
       # Exceptions:
       # `raise` is an ordinary :send for the parser
@@ -179,7 +179,7 @@ module RuboCop
       # does node have a particular type as a descendant?
       def descendant?(node, descendant_type)
         on_node(descendant_type, node) do
-          return true           # short circuit, returns from the method
+          return true # short circuit, returns from the method
         end
         false
       end

@@ -43,7 +43,7 @@ class VariableScope < Hash
     super
   end
 
-  alias_method :variable?, :key?
+  alias variable? key?
 end
 
 # A stack of VariableScope

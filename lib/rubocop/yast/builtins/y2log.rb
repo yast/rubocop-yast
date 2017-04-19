@@ -19,20 +19,20 @@ module RuboCop
           y2error: "error",
           y2security: "error",
           y2internal: "fatal"
-        }
+        }.freeze
 
         ASGN_TYPES = [
           :lvasgn,
           :op_asgn,
           :or_asgn,
           :and_asgn
-        ]
+        ].freeze
 
         TYPES_WITHOUT_ARG = [
           :dstr,
           :send,
           :lvar
-        ]
+        ].freeze
 
         def initialize
           @added_includes = []
@@ -45,7 +45,7 @@ module RuboCop
           # Builtins.y2milestone(-1, "foo") or unsafe code like
           # fmt = "%1: %2"; Builtins.y2milestone(fmt, foo, bar)
           if !((TYPES_WITHOUT_ARG.include?(format.type) && params.empty?) ||
-               (format.str_type?)) || ignore_node?(node)
+               format.str_type?) || ignore_node?(node)
             raise RuboCop::Cop::CorrectionNotPossible
           end
 
@@ -113,7 +113,7 @@ module RuboCop
 
         # insert after "class Foo" or "class Foo < Bar" statement
         def class_logger_pos(node)
-          node.loc.operator ? node.children[1].loc.expression :  node.loc.name
+          node.loc.operator ? node.children[1].loc.expression : node.loc.name
         end
 
         # simple check for already present include

@@ -6,6 +6,9 @@ Style/FileName:
 Metrics/ClassLength:
   Max: 150
 
+Style/Alias:
+  Enabled: false
+
 # align arrows:
 # "foo"     => true
 # "foo_bar" => false

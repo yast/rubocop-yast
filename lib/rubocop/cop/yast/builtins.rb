@@ -15,6 +15,7 @@ module RuboCop
         attr_reader :handlers, :default_handler
 
         MSG = "Builtin call `%s` is obsolete, use native Ruby function instead."
+          .freeze
 
         BUILTINS_NODES = [
           # Builtins.*
@@ -23,7 +24,7 @@ module RuboCop
           s(:const, s(:const, nil, :Yast), :Builtins),
           # ::Yast::Builtins.*
           s(:const, s(:const, s(:cbase), :Yast), :Builtins)
-        ]
+        ].freeze
 
         def initialize(config = nil, options = nil)
           super(config, options)

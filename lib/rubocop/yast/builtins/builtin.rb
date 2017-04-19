@@ -22,7 +22,7 @@ module RuboCop
           :cryptblowfish,
           :cryptsha256,
           :cryptsha512
-        ]
+        ].freeze
 
         def offense?(node)
           _receiver, method_name, *_args = *node

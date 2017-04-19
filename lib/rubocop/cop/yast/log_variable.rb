@@ -11,6 +11,7 @@ module RuboCop
       # can override the included logger
       class LogVariable < Cop
         MSG = "Do not use `log` variable, it can conflict with the logger."
+          .freeze
 
         def on_lvasgn(node)
           name, _value = *node
