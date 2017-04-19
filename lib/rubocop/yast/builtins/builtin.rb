@@ -1,7 +1,4 @@
 
-# RuboCop::Cop::CorrectionNotPossible exception
-require "rubocop/cop/cop"
-
 module RuboCop
   module Yast
     module Builtins
@@ -30,7 +27,7 @@ module RuboCop
         end
 
         def correction(_node)
-          raise RuboCop::Cop::CorrectionNotPossible
+          false
         end
       end
     end

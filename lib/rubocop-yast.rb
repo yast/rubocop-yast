@@ -3,7 +3,8 @@
 require "rubocop"
 
 require_relative "rubocop/yast/config"
-RuboCop::Yast::Config.load_defaults
+# FIXME: re-enable this
+#RuboCop::Yast::Config.load_defaults
 
 require_relative "rubocop/yast/version"
 require_relative "rubocop/yast/logger"

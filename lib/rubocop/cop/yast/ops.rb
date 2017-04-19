@@ -73,7 +73,6 @@ end
 # Niceness processor really
 class OpsProcessor < Parser::AST::Processor
   include RuboCop::Yast::TrackVariableScope
-  include RuboCop::Cop::Util # const_name
 
   attr_reader :cop
 
@@ -91,7 +90,7 @@ class OpsProcessor < Parser::AST::Processor
     super
 
     receiver, message = *node
-    return unless const_name(receiver) == "Ops"
+    return unless receiver && receiver.const_name == "Ops"
     return unless RuboCop::Cop::Yast::Ops::REPLACEMENT.key?(message)
     return unless cop.strict_mode || autocorrectable?(node)
     cop.add_offense(node, :selector, format(MSG, message))

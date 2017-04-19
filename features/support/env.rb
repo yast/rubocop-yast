@@ -2,6 +2,7 @@
 
 require "simplecov"
 require "rspec"
+require "rubocop/rspec/cop_helper"
 
 # use coveralls for on-line code coverage reporting at Travis CI
 if ENV["TRAVIS"]
@@ -24,12 +25,18 @@ RSpec.configure do |config|
   config.expect_with :rspec do |c|
     c.syntax = :expect
   end
+  config.include CopHelper
+  config.full_backtrace = true
 end
 
-# reuse the Rubocop helper, provides some nice methods used in tests
-require File.join(Gem::Specification.find_by_name("rubocop").gem_dir, "spec",
-  "support", "cop_helper.rb")
-include CopHelper
+# a bad hack. including CopHelper in the RSpec example is not enough
+# because Cucumber runs it elsewhere
+module RSpec::Matchers
+  def self.let(symbol, &block)
+    define_method(symbol, block)
+  end
+  include CopHelper
+end
 
 $LOAD_PATH.unshift(File.join(File.dirname(__FILE__), "..", "lib"))
 
